@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import handleNewLine from './utils/handle-new-line';
 
 const style = {
   width: '20rem',
@@ -20,6 +21,12 @@ const CodeEditor = () => {
       ref={ref}
       contentEditable={true}
       spellCheck={false}
+      onKeyDown={e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleNewLine(ref.current!);
+        }
+      }}
     ></div>
   );
 };
