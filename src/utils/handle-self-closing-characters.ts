@@ -157,6 +157,50 @@ const handleSelfClosingCharacters = (
       selection.collapse(editor.childNodes[0], afterCaret.length + 1);
     }
   }
+
+  if (selection.type === 'Range') {
+    const selectedText = editor.innerHTML.slice(
+      afterCaret.length,
+      editor.innerHTML.length - beforeCaret.length
+    );
+    let closingCharacter: string;
+
+    const isBracket = OPENING_BRACKETS.includes(character);
+    const isQuote = [...SINGLE_LINE_QUOTES, MUTLI_LINE_QUOTE].includes(
+      character
+    );
+
+    if (isBracket) {
+      closingCharacter = CLOSING_BRACKETS[OPENING_BRACKETS.indexOf(character)];
+    }
+
+    if (isQuote) {
+      closingCharacter = character;
+    }
+
+    if (isBracket || isQuote) {
+      e.preventDefault();
+      //? Wrap the selected text
+      editor.innerHTML = `${afterCaret}${character}${selectedText}${closingCharacter!}${beforeCaret}`;
+
+      //? Re select the previously selected text
+      const range = document.createRange();
+      range.setStart(editor.childNodes[0], afterCaret.length + 1);
+
+      //* Do that check because selectedText may end with <br> (because to solve caret not moving bug we used this dirty trick 😗)
+      const selectedTextLength = selectedText.endsWith('<br>')
+        ? selectedText.slice(0, -4).length + 1
+        : selectedText.length + 1;
+
+      range.setEnd(
+        editor.childNodes[0],
+        afterCaret.length + selectedTextLength
+      );
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
 };
 
 export default handleSelfClosingCharacters;
