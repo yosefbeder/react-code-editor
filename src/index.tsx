@@ -31,8 +31,7 @@ const CodeEditor = () => {
         }
 
         if (e.key === 'Tab') {
-          e.preventDefault();
-          handleTab(ref.current!);
+          handleTab(ref.current!, e);
         }
 
         if (SPECIAL_CHARACTERS.includes(e.key)) {
