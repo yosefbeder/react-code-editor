@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import handleNewLine from './utils/handle-new-line';
+import handleTab from './utils/handle-tab';
 
 const style = {
   width: '20rem',
@@ -25,6 +26,11 @@ const CodeEditor = () => {
         if (e.key === 'Enter') {
           e.preventDefault();
           handleNewLine(ref.current!);
+        }
+
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          handleTab(ref.current!);
         }
       }}
     ></div>
