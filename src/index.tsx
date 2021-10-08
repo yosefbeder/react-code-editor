@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import handleNewLine from './utils/handle-new-line';
 import handleTab from './utils/handle-tab';
+import handleSelfClosingCharacters from './utils/handle-self-closing-characters';
+import { SPECIAL_CHARACTERS } from './constants';
 
 const style = {
   width: '20rem',
@@ -31,6 +33,10 @@ const CodeEditor = () => {
         if (e.key === 'Tab') {
           e.preventDefault();
           handleTab(ref.current!);
+        }
+
+        if (SPECIAL_CHARACTERS.includes(e.key)) {
+          handleSelfClosingCharacters(ref.current!, e);
         }
       }}
     ></div>
