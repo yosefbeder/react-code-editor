@@ -3,6 +3,7 @@ import handleNewLine from './utils/handle-new-line';
 import handleTab from './utils/handle-tab';
 import handleSelfClosingCharacters from './utils/handle-self-closing-characters';
 import { SPECIAL_CHARACTERS } from './constants';
+import handleSpecialCharactersRemoving from './utils/handle-special-characters-removing';
 
 const style = {
   width: '20rem',
@@ -36,6 +37,10 @@ const CodeEditor = () => {
 
         if (SPECIAL_CHARACTERS.includes(e.key)) {
           handleSelfClosingCharacters(ref.current!, e);
+        }
+
+        if (e.key === 'Backspace') {
+          handleSpecialCharactersRemoving(ref.current!, e);
         }
       }}
     ></div>

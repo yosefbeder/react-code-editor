@@ -11,7 +11,7 @@ const handleSelfClosingCharacters = (
   e: React.KeyboardEvent<HTMLDivElement>
 ) => {
   /*
-    1. If there's not selected text.
+    1. If there's no selected text.
 
       ? Brackets
 
@@ -44,12 +44,11 @@ const handleSelfClosingCharacters = (
   */
 
   const selection = window.getSelection()!;
+  const character = e.key;
+  const afterCaret = getAfterCaret(selection);
+  const beforeCaret = getBeforeCaret(selection);
 
   if (selection.type === 'Caret') {
-    const afterCaret = getAfterCaret(selection);
-    const beforeCaret = getBeforeCaret(selection);
-
-    const character = e.key;
     const line = getLineOf(afterCaret.length, editor.innerHTML);
 
     // Brackets
