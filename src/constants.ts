@@ -8,6 +8,11 @@ const SPECIAL_CHARACTERS = [
   ...SINGLE_LINE_QUOTES,
   MUTLI_LINE_QUOTE,
 ];
+const enum Actions {
+  RECORD,
+  UNDO,
+  REDO,
+}
 
 export {
   OPENING_BRACKETS,
@@ -15,4 +20,5 @@ export {
   SINGLE_LINE_QUOTES,
   MUTLI_LINE_QUOTE,
   SPECIAL_CHARACTERS,
+  Actions,
 };
