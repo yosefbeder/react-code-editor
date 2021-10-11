@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAfterCaret, getBeforeCaret } from '.';
+import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
 import {
   CLOSING_BRACKETS,
   MUTLI_LINE_QUOTE,
@@ -34,7 +34,13 @@ const handleSpecialCharactersRemoving = (
     e.preventDefault();
 
     editor.innerHTML = `${afterCaret.slice(0, -1)}${beforeCaret.slice(1)}`;
-    selection.collapse(editor.childNodes[0], afterCaret.length - 1);
+
+    const nextCaretPosition = afterCaret.length - 1;
+
+    restoreCaretPosition(selection, editor.childNodes[0], {
+      start: nextCaretPosition,
+      end: nextCaretPosition,
+    });
   }
 };
 

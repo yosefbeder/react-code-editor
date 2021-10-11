@@ -1,4 +1,5 @@
-import { getAfterCaret, getBeforeCaret, getPadding } from '.';
+import { getPadding } from '.';
+import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
 import {
   CLOSING_BRACKETS,
   OPENING_BRACKETS,
@@ -45,10 +46,12 @@ const handleNewLine = (editor: HTMLDivElement) => {
   editor.innerHTML = newContent;
 
   //? Move the position of the caret to the next line + the number of tabs
-  selection.collapse(
-    editor.childNodes[0],
-    afterCaret.length + 1 + padding.length
-  );
+  const nextCaretPosition = afterCaret.length + 1 + padding.length;
+
+  restoreCaretPosition(selection, editor.childNodes[0], {
+    start: nextCaretPosition,
+    end: nextCaretPosition,
+  });
 
   //? Scoll to the begining of the editor in the x axis
   editor.scrollLeft = 0;

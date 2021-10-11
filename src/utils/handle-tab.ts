@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAfterCaret, getBeforeCaret } from '.';
+import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
 
 const handleTab = (
   editor: HTMLDivElement,
@@ -18,11 +18,23 @@ const handleTab = (
         0,
         afterCaret.length - 1
       )}${beforeCaret}`;
-      selection.collapse(editor.childNodes[0], afterCaret.length - 1);
+
+      const nextCursorPosition = afterCaret.length - 1;
+
+      restoreCaretPosition(selection, editor.childNodes[0], {
+        start: nextCursorPosition,
+        end: nextCursorPosition,
+      });
     }
   } else {
     editor.innerHTML = `${afterCaret}\t${beforeCaret}`;
-    selection.collapse(editor.childNodes[0], afterCaret.length + 1);
+
+    const nextCursorPosition = afterCaret.length + 1;
+
+    restoreCaretPosition(selection, editor.childNodes[0], {
+      start: nextCursorPosition,
+      end: nextCursorPosition,
+    });
   }
 };
 

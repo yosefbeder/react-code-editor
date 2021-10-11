@@ -1,32 +1,5 @@
 import { OPENING_BRACKETS, MUTLI_LINE_QUOTE } from '../constants';
-
-const getAfterCaret = (selection: Selection) => {
-  const textNode = selection.anchorNode?.nodeValue;
-  const [start, end] = [selection.anchorOffset, selection.focusOffset];
-
-  if (!textNode) return '';
-
-  if (start < end) {
-    return textNode.slice(0, start);
-  } else {
-    return textNode.slice(0, end);
-  }
-};
-
-const getBeforeCaret = (selection: Selection) => {
-  const textNode = selection.anchorNode?.nodeValue;
-  const [start, end] = [selection.anchorOffset, selection.focusOffset];
-  let result: string;
-
-  if (!textNode) return '';
-
-  if (start < end) {
-    result = textNode.slice(end);
-  } else {
-    result = textNode.slice(start);
-  }
-  return result;
-};
+import { getAfterCaret } from './caret';
 
 const getLineOf = (offset: number, string: string): string => {
   /*
@@ -106,4 +79,4 @@ const getPadding = (selection: Selection) => {
   return padding;
 };
 
-export { getAfterCaret, getBeforeCaret, getLineOf, getPadding };
+export { getLineOf, getPadding };

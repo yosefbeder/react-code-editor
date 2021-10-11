@@ -1,4 +1,5 @@
-import { getAfterCaret, getBeforeCaret, getLineOf } from '.';
+import { getLineOf } from '.';
+import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
 import {
   OPENING_BRACKETS,
   CLOSING_BRACKETS,
@@ -59,14 +60,24 @@ const handleSelfClosingCharacters = (
         CLOSING_BRACKETS[OPENING_BRACKETS.indexOf(character)]
       }${beforeCaret}`;
 
-      selection.collapse(editor.childNodes[0], afterCaret.length + 1);
+      const nextCaretPosition = afterCaret.length + 1;
+
+      restoreCaretPosition(selection, editor.childNodes[0], {
+        start: nextCaretPosition,
+        end: nextCaretPosition,
+      });
     }
 
     if (CLOSING_BRACKETS.includes(character)) {
       if (beforeCaret[0] === character) {
         e.preventDefault();
 
-        selection.collapse(editor.childNodes[0], afterCaret.length + 1);
+        const nextCaretPosition = afterCaret.length + 1;
+
+        restoreCaretPosition(selection, editor.childNodes[0], {
+          start: nextCaretPosition,
+          end: nextCaretPosition,
+        });
       }
     }
 
@@ -131,7 +142,12 @@ const handleSelfClosingCharacters = (
         }
       }
 
-      selection.collapse(editor.childNodes[0], afterCaret.length + 1);
+      const nextCaretPosition = afterCaret.length + 1;
+
+      restoreCaretPosition(selection, editor.childNodes[0], {
+        start: nextCaretPosition,
+        end: nextCaretPosition,
+      });
     }
 
     // Mutli line quote
@@ -154,7 +170,12 @@ const handleSelfClosingCharacters = (
         editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
       }
 
-      selection.collapse(editor.childNodes[0], afterCaret.length + 1);
+      const nextCaretPosition = afterCaret.length + 1;
+
+      restoreCaretPosition(selection, editor.childNodes[0], {
+        start: nextCaretPosition,
+        end: nextCaretPosition,
+      });
     }
   }
 
@@ -184,21 +205,18 @@ const handleSelfClosingCharacters = (
       editor.innerHTML = `${afterCaret}${character}${selectedText}${closingCharacter!}${beforeCaret}`;
 
       //? Re select the previously selected text
-      const range = document.createRange();
-      range.setStart(editor.childNodes[0], afterCaret.length + 1);
 
       //* Do that check because selectedText may end with <br> (because to solve caret not moving bug we used this dirty trick 😗)
       const selectedTextLength = selectedText.endsWith('<br>')
         ? selectedText.slice(0, -4).length + 1
         : selectedText.length + 1;
 
-      range.setEnd(
-        editor.childNodes[0],
-        afterCaret.length + selectedTextLength
-      );
+      const nextCaretPosition = {
+        start: afterCaret.length + 1,
+        end: afterCaret.length + selectedTextLength,
+      };
 
-      selection.removeAllRanges();
-      selection.addRange(range);
+      restoreCaretPosition(selection, editor.childNodes[0], nextCaretPosition);
     }
   }
 };
