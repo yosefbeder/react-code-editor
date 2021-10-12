@@ -5,8 +5,12 @@ import {
   OPENING_BRACKETS,
   MUTLI_LINE_QUOTE,
 } from '../constants';
+import { PositionType } from '../types';
 
-const handleNewLine = (editor: HTMLDivElement) => {
+const handleNewLine = (
+  editor: HTMLDivElement,
+  recordHistory: (html: string, position: PositionType) => void
+) => {
   const selection = window.getSelection()!;
 
   //? Get the content around the caret
@@ -49,6 +53,11 @@ const handleNewLine = (editor: HTMLDivElement) => {
   const nextCaretPosition = afterCaret.length + 1 + padding.length;
 
   restoreCaretPosition(selection, editor.childNodes[0], {
+    start: nextCaretPosition,
+    end: nextCaretPosition,
+  });
+
+  recordHistory(newContent, {
     start: nextCaretPosition,
     end: nextCaretPosition,
   });

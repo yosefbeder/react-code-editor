@@ -6,10 +6,12 @@ import {
   SINGLE_LINE_QUOTES,
   MUTLI_LINE_QUOTE,
 } from '../constants';
+import { PositionType } from '../types';
 
 const handleSelfClosingCharacters = (
   editor: HTMLDivElement,
-  e: React.KeyboardEvent<HTMLDivElement>
+  e: React.KeyboardEvent<HTMLDivElement>,
+  recordHistory: (html: string, position: PositionType) => void
 ) => {
   /*
     1. If there's no selected text.
@@ -63,6 +65,11 @@ const handleSelfClosingCharacters = (
       const nextCaretPosition = afterCaret.length + 1;
 
       restoreCaretPosition(selection, editor.childNodes[0], {
+        start: nextCaretPosition,
+        end: nextCaretPosition,
+      });
+
+      recordHistory(editor.innerHTML, {
         start: nextCaretPosition,
         end: nextCaretPosition,
       });
@@ -131,14 +138,36 @@ const handleSelfClosingCharacters = (
             0;
         }
 
-        if (isCharactersInLineEven && beforeCaret[0] !== character) {
-          editor.innerHTML = `${afterCaret}${character.repeat(
-            2
-          )}${beforeCaret}`;
-        }
+        const nextCaretPosition = afterCaret.length + 1;
 
-        if (!isCharactersInLineEven) {
+        if (isCharactersInLineEven) {
+          if (beforeCaret[0] !== character) {
+            editor.innerHTML = `${afterCaret}${character.repeat(
+              2
+            )}${beforeCaret}`;
+
+            restoreCaretPosition(selection, editor.childNodes[0], {
+              start: nextCaretPosition,
+              end: nextCaretPosition,
+            });
+
+            recordHistory(editor.innerHTML, {
+              start: nextCaretPosition,
+              end: nextCaretPosition,
+            });
+          } else {
+            restoreCaretPosition(selection, editor.childNodes[0], {
+              start: nextCaretPosition,
+              end: nextCaretPosition,
+            });
+          }
+        } else {
           editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
+
+          restoreCaretPosition(selection, editor.childNodes[0], {
+            start: nextCaretPosition,
+            end: nextCaretPosition,
+          });
         }
       }
 
@@ -162,20 +191,37 @@ const handleSelfClosingCharacters = (
           2 ===
         0;
 
-      if (isCharactersInWholeTextEven && beforeCaret[0] !== character) {
-        editor.innerHTML = `${afterCaret}${character.repeat(2)}${beforeCaret}`;
-      }
-
-      if (!isCharactersInWholeTextEven) {
-        editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
-      }
-
       const nextCaretPosition = afterCaret.length + 1;
 
-      restoreCaretPosition(selection, editor.childNodes[0], {
-        start: nextCaretPosition,
-        end: nextCaretPosition,
-      });
+      if (isCharactersInWholeTextEven) {
+        if (beforeCaret[0] !== character) {
+          editor.innerHTML = `${afterCaret}${character.repeat(
+            2
+          )}${beforeCaret}`;
+
+          restoreCaretPosition(selection, editor.childNodes[0], {
+            start: nextCaretPosition,
+            end: nextCaretPosition,
+          });
+
+          recordHistory(editor.innerHTML, {
+            start: nextCaretPosition,
+            end: nextCaretPosition,
+          });
+        } else {
+          restoreCaretPosition(selection, editor.childNodes[0], {
+            start: nextCaretPosition,
+            end: nextCaretPosition,
+          });
+        }
+      } else {
+        editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
+
+        restoreCaretPosition(selection, editor.childNodes[0], {
+          start: nextCaretPosition,
+          end: nextCaretPosition,
+        });
+      }
     }
   }
 
@@ -217,6 +263,8 @@ const handleSelfClosingCharacters = (
       };
 
       restoreCaretPosition(selection, editor.childNodes[0], nextCaretPosition);
+
+      recordHistory(editor.innerHTML, nextCaretPosition);
     }
   }
 };

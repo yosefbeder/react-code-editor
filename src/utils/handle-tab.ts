@@ -5,8 +5,6 @@ const handleTab = (
   editor: HTMLDivElement,
   e: React.KeyboardEvent<HTMLDivElement>
 ) => {
-  e.preventDefault();
-
   const selection = window.getSelection()!;
 
   const afterCaret = getAfterCaret(selection);
