@@ -44,7 +44,7 @@ const handleNewLine = (
         : beforeCaret
     }`;
   } else {
-    newContent = `${afterCaret}\n${beforeCaret || '<br>'}`;
+    newContent = `${afterCaret}\n${beforeCaret}`;
   }
 
   editor.innerHTML = newContent;

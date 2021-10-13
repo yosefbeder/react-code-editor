@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,500;1,500&display=swap');
+
+.editor {
+  --color-dark-gray: #333;
+  --color-gray: #999;
+  --color-light-gray: #bbb;
+
+  width: 20rem;
+  height: max-content;
+  padding: 1rem;
+  border: 1px solid var(--color-gray);
+  outline: none;
+  border-radius: 0.5rem;
+
+  font-family: 'Azeret Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--color-dark-gray);
+
+  white-space: pre;
+  tab-size: 4;
+  overflow-x: scroll;
+}
+
+.editor::after {
+  content: '\200b';
+}

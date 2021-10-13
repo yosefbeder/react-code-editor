@@ -15,17 +15,7 @@ import { getCaretPosition, restoreCaretPosition } from './utils/caret';
 import { PositionType } from './types';
 import handleCharacter from './utils/handle-character';
 import handleRangeRemoving from './utils/handle-range-removing';
-
-const style = {
-  width: '20rem',
-  height: '10rem',
-  backgroundColor: '#333',
-  borderRadius: '.5rem',
-  outline: 'none',
-  padding: '1rem',
-  fontFamily: 'monospace',
-  color: '#fff',
-};
+import './index.css';
 
 const CodeEditor = () => {
   const [state, send] = useReducer(reducer, initialState);
@@ -60,7 +50,7 @@ const CodeEditor = () => {
 
   return (
     <div
-      style={{ ...style, whiteSpace: 'pre', tabSize: 2, overflowX: 'scroll' }}
+      className="editor"
       ref={ref}
       contentEditable={true}
       spellCheck={false}
