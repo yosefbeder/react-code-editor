@@ -130,6 +130,11 @@ const CodeEditor = () => {
 
         if (e.key === 'Backspace') {
           handleSpecialCharactersRemoving(editor, e);
+
+          //* Removing the default behavior of adding a <br> if the editor is empty
+          if (!editor.textContent) {
+            e.preventDefault();
+          }
         }
 
         if (e.code === 'Space') {
