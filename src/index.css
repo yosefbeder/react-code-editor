@@ -1,26 +1,64 @@
-@import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,500;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,300;0,500;1,400;1,500&display=swap');
 
 .editor {
   --color-dark-gray: #333;
-  --color-gray: #999;
-  --color-light-gray: #bbb;
+  --color-gray: #555;
+  --color-light-gray: #999;
 
-  width: 20rem;
-  height: max-content;
-  padding: 1rem;
-  border: 1px solid var(--color-gray);
-  outline: none;
-  border-radius: 0.5rem;
+  position: relative;
+  box-sizing: border-box;
 
   font-family: 'Azeret Mono', monospace;
   font-size: 0.8rem;
+}
+
+.editor *,
+.editor *::after,
+.editor *::before {
+  box-sizing: inherit;
+}
+
+.editor__lines-numbers {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 1rem;
+  height: 100%;
+  padding: 1rem 0;
+  border-right: 1px solid var(--color-light-gray);
+
+  color: var(--color-gray);
+  font-weight: 300;
+}
+
+.editor__textarea {
+  width: 20rem;
+  height: max-content;
+  padding: 1rem;
+  padding-left: 2rem;
+  border: 1px solid var(--color-light-gray);
+  outline: none;
+  border-radius: 0.5rem;
+
   color: var(--color-dark-gray);
+  font-weight: 500;
+  line-height: 1.5;
 
   white-space: pre;
   tab-size: 4;
   overflow-x: scroll;
+  scrollbar-width: none;
 }
 
-.editor::after {
+.editor__textarea::after {
   content: '\200b';
+}
+
+.editor__textarea::-webkit-scrollbar {
+  height: 0;
 }

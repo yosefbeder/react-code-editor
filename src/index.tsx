@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import handleNewLine from './utils/handle-new-line';
 import handleTab from './utils/handle-tab';
 import handleSelfClosingCharacters from './utils/handle-self-closing-characters';
@@ -20,12 +20,30 @@ import './index.css';
 const CodeEditor = () => {
   const [state, send] = useReducer(reducer, initialState);
   const ref = useRef<HTMLDivElement>(null);
+  const [lineNumber, setLineNumber] = useState(0);
 
+  const calculateLineNumber = (editor: HTMLDivElement) => {
+    if (editor.textContent) {
+      setLineNumber(
+        editor.textContent
+          .split('')
+          .reduce((acc, cur) => (/\n/g.test(cur) ? acc + 1 : acc), 0) + 1
+      );
+    } else {
+      setLineNumber(1);
+    }
+  };
+
+  useEffect(() => {
+    //? The first caculation of the line number
+    calculateLineNumber(ref.current!);
+  }, []);
+
+  // override the input whenever it's changed by the reducer
   useEffect(() => {
     const editor = ref.current!;
     const selection = window.getSelection()!;
 
-    // override the input whenever it's changed by the reducer
     if (state.present.html !== editor.innerHTML) {
       editor.innerHTML = state.present.html;
       restoreCaretPosition(
@@ -33,6 +51,9 @@ const CodeEditor = () => {
         editor.childNodes[0],
         state.present.position
       );
+
+      //? Whenever we undo or redo
+      calculateLineNumber(ref.current!);
     }
   }, [state.present]);
 
@@ -48,106 +69,120 @@ const CodeEditor = () => {
     send({ type: Actions.RECORD, payload: { html, position } });
   };
 
+  const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const editor = ref.current!;
+    const selection = window.getSelection()!;
+    const caretPosition = getCaretPosition(selection);
+    const isUndo = e.code === 'KeyZ' && e.ctrlKey;
+    const isRedo = e.code === 'KeyY' && e.ctrlKey;
+
+    if (
+      isUndo ||
+      isRedo ||
+      e.key === 'Enter' ||
+      e.key === 'Tab' ||
+      e.code === 'Space' ||
+      e.key === '.'
+    ) {
+      e.preventDefault();
+    }
+
+    // 5.
+    if (
+      caretPosition.start !== caretPosition.end &&
+      ![...OPENING_BRACKETS, ...SINGLE_LINE_QUOTES, MUTLI_LINE_QUOTE].includes(
+        e.key
+      ) &&
+      !isUndo &&
+      !isRedo &&
+      e.key !== 'Meta' &&
+      e.key !== 'Control' &&
+      e.key !== 'Alt' &&
+      !e.key.startsWith('Arrow')
+    ) {
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+
+        handleRangeRemoving(selection, editor, recordHistory);
+      }
+
+      recordHistory(editor.innerHTML, getCaretPosition(selection));
+    }
+
+    if (isUndo) {
+      // 4.
+      if (editor.innerHTML !== state.present.html) {
+        recordHistory(editor.innerHTML, getCaretPosition(selection));
+      }
+      //* To fix updating issue
+      setTimeout(() => send({ type: Actions.UNDO }));
+    }
+
+    if (isRedo) {
+      // 4.
+      if (editor.innerHTML !== state.present.html) {
+        recordHistory(editor.innerHTML, getCaretPosition(selection));
+      } else {
+        send({ type: Actions.REDO });
+      }
+    }
+
+    if (e.key === 'Enter') {
+      // 2.
+      handleNewLine(editor, recordHistory);
+    }
+
+    if (e.key === 'Tab') {
+      handleTab(editor, e);
+    }
+
+    if (SPECIAL_CHARACTERS.includes(e.key)) {
+      // 3.
+      handleSelfClosingCharacters(editor, e, recordHistory);
+    }
+
+    if (e.key === 'Backspace') {
+      handleSpecialCharactersRemoving(editor, e);
+
+      //* Removing the default behavior of adding a <br> if the editor is empty
+      if (!editor.textContent) {
+        e.preventDefault();
+      }
+    }
+
+    if (e.code === 'Space') {
+      // 1.
+      handleCharacter(selection, editor, ' ', recordHistory);
+    }
+
+    if (e.key === '.') {
+      // 1.
+      handleCharacter(selection, editor, '.', recordHistory);
+    }
+
+    //? Whenever a range is removed or a new space is added
+    calculateLineNumber(editor);
+  };
+
   return (
-    <div
-      className="editor"
-      ref={ref}
-      contentEditable={true}
-      spellCheck={false}
-      onKeyDown={e => {
-        const editor = ref.current!;
-        const selection = window.getSelection()!;
-        const caretPosition = getCaretPosition(selection);
-        const isUndo = e.code === 'KeyZ' && e.ctrlKey;
-        const isRedo = e.code === 'KeyY' && e.ctrlKey;
-
-        if (
-          isUndo ||
-          isRedo ||
-          e.key === 'Enter' ||
-          e.key === 'Tab' ||
-          e.code === 'Space' ||
-          e.key === '.'
-        ) {
-          e.preventDefault();
-        }
-
-        // 5.
-        if (
-          caretPosition.start !== caretPosition.end &&
-          ![
-            ...OPENING_BRACKETS,
-            ...SINGLE_LINE_QUOTES,
-            MUTLI_LINE_QUOTE,
-          ].includes(e.key) &&
-          !isUndo &&
-          !isRedo &&
-          e.key !== 'Meta' &&
-          e.key !== 'Control' &&
-          e.key !== 'Alt' &&
-          !e.key.startsWith('Arrow')
-        ) {
-          if (e.key === 'Backspace') {
-            e.preventDefault();
-
-            handleRangeRemoving(selection, editor, recordHistory);
-          }
-
-          recordHistory(editor.innerHTML, getCaretPosition(selection));
-        }
-
-        if (isUndo) {
-          // 4.
-          if (editor.innerHTML !== state.present.html) {
-            recordHistory(editor.innerHTML, getCaretPosition(selection));
-          }
-          //* To fix updating issue
-          setTimeout(() => send({ type: Actions.UNDO }));
-        }
-
-        if (isRedo) {
-          // 4.
-          if (editor.innerHTML !== state.present.html) {
-            recordHistory(editor.innerHTML, getCaretPosition(selection));
-          } else {
-            send({ type: Actions.REDO });
-          }
-        }
-
-        if (e.key === 'Enter') {
-          // 2.
-          handleNewLine(editor, recordHistory);
-        }
-
-        if (e.key === 'Tab') {
-          handleTab(editor, e);
-        }
-
-        if (SPECIAL_CHARACTERS.includes(e.key)) {
-          // 3.
-          handleSelfClosingCharacters(editor, e, recordHistory);
-        }
-
-        if (e.key === 'Backspace') {
-          handleSpecialCharactersRemoving(editor, e);
-
-          //* Removing the default behavior of adding a <br> if the editor is empty
-          if (!editor.textContent) {
-            e.preventDefault();
-          }
-        }
-
-        if (e.code === 'Space') {
-          // 1.
-          handleCharacter(selection, editor, ' ', recordHistory);
-        }
-
-        if (e.key === '.') {
-          // 1.
-          handleCharacter(selection, editor, '.', recordHistory);
-        }
-      }}
-    ></div>
+    <div className="editor">
+      <div
+        className="editor__textarea"
+        ref={ref}
+        contentEditable={true}
+        spellCheck={false}
+        onInput={() => {
+          //? Whenever a new line is removed by the default behavior of the browser
+          calculateLineNumber(ref.current!);
+        }}
+        onKeyDown={keyDownHandler}
+      />
+      <div className="editor__lines-numbers">
+        {Array.from({ length: lineNumber }).map((_, i) => (
+          <div key={i}>{i + 1}</div>
+        ))}
+      </div>
+    </div>
   );
 };
 
