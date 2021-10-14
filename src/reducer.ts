@@ -3,7 +3,7 @@ import { Actions } from './constants';
 import { PositionType } from './types';
 
 interface HistoryRecordType {
-  html: string;
+  text: string;
   position: PositionType;
 }
 
@@ -74,7 +74,7 @@ const reducer: Reducer<StateType, ActionType> = (state, action) => {
 
 const initialState: StateType = {
   past: [],
-  present: { html: '', position: { start: 0, end: 0 } },
+  present: { text: '', position: { start: 0, end: 0 } },
   future: [],
 };
 

@@ -21,31 +21,27 @@ const CodeEditor = () => {
   const [state, send] = useReducer(reducer, initialState);
   const ref = useRef<HTMLDivElement>(null);
   const [lineNumber, setLineNumber] = useState(0);
+  const [curText, setCurText] = useState('');
 
-  const calculateLineNumber = (editor: HTMLDivElement) => {
-    if (editor.textContent) {
-      setLineNumber(
-        editor.textContent
-          .split('')
-          .reduce((acc, cur) => (/\n/g.test(cur) ? acc + 1 : acc), 0) + 1
-      );
-    } else {
-      setLineNumber(1);
-    }
+  const calculateLineNumber = (text: string) => {
+    setLineNumber(
+      text
+        .split('')
+        .reduce((acc, cur) => (/\n/g.test(cur) ? acc + 1 : acc), 0) + 1
+    );
   };
 
   useEffect(() => {
-    //? The first caculation of the line number
-    calculateLineNumber(ref.current!);
-  }, []);
+    calculateLineNumber(curText);
+  }, [curText]);
 
   // override the input whenever it's changed by the reducer
   useEffect(() => {
     const editor = ref.current!;
     const selection = window.getSelection()!;
 
-    if (state.present.html !== editor.innerHTML) {
-      editor.innerHTML = state.present.html;
+    if (state.present.text !== editor.innerText) {
+      editor.innerHTML = state.present.text;
       restoreCaretPosition(
         selection,
         editor.childNodes[0],
@@ -53,7 +49,7 @@ const CodeEditor = () => {
       );
 
       //? Whenever we undo or redo
-      calculateLineNumber(ref.current!);
+      setCurText(editor.innerText);
     }
   }, [state.present]);
 
@@ -65,12 +61,13 @@ const CodeEditor = () => {
       4. Undoing or redoing and the present isn't equal to the cur input value.
       5. If some text is selected and we clicked a button that will delete it.
   */
-  const recordHistory = (html: string, position: PositionType) => {
-    send({ type: Actions.RECORD, payload: { html, position } });
+  const recordHistory = (text: string, position: PositionType) => {
+    send({ type: Actions.RECORD, payload: { text, position } });
   };
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const editor = ref.current!;
+    const textAfter = editor.innerText;
     const selection = window.getSelection()!;
     const caretPosition = getCaretPosition(selection);
     const isUndo = e.code === 'KeyZ' && e.ctrlKey;
@@ -106,13 +103,13 @@ const CodeEditor = () => {
         handleRangeRemoving(selection, editor, recordHistory);
       }
 
-      recordHistory(editor.innerHTML, getCaretPosition(selection));
+      recordHistory(editor.innerText, getCaretPosition(selection));
     }
 
     if (isUndo) {
       // 4.
-      if (editor.innerHTML !== state.present.html) {
-        recordHistory(editor.innerHTML, getCaretPosition(selection));
+      if (editor.innerText !== state.present.text) {
+        recordHistory(editor.innerText, getCaretPosition(selection));
       }
       //* To fix updating issue
       setTimeout(() => send({ type: Actions.UNDO }));
@@ -120,8 +117,8 @@ const CodeEditor = () => {
 
     if (isRedo) {
       // 4.
-      if (editor.innerHTML !== state.present.html) {
-        recordHistory(editor.innerHTML, getCaretPosition(selection));
+      if (editor.innerText !== state.present.text) {
+        recordHistory(editor.innerText, getCaretPosition(selection));
       } else {
         send({ type: Actions.REDO });
       }
@@ -160,8 +157,13 @@ const CodeEditor = () => {
       handleCharacter(selection, editor, '.', recordHistory);
     }
 
-    //? Whenever a range is removed or a new space is added
-    calculateLineNumber(editor);
+    //? Whenever something is changed by the handlers
+
+    const textBefore = editor.innerText;
+
+    if (textAfter !== textBefore) {
+      setCurText(textBefore);
+    }
   };
 
   return (
@@ -173,7 +175,9 @@ const CodeEditor = () => {
         spellCheck={false}
         onInput={() => {
           //? Whenever a new line is removed by the default behavior of the browser
-          calculateLineNumber(ref.current!);
+          const editor = ref.current!;
+
+          setCurText(editor.innerText);
         }}
         onKeyDown={keyDownHandler}
       />

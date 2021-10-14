@@ -20,7 +20,7 @@ const handleCharacter = (
     end: nextCaretPosition,
   });
 
-  recordHistory(editor.innerHTML, {
+  recordHistory(editor.innerText, {
     start: nextCaretPosition,
     end: nextCaretPosition,
   });

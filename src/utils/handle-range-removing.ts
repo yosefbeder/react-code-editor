@@ -14,7 +14,7 @@ const handleRangeRemoving = (
   const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
 
-  recordHistory(editor.innerHTML, getCaretPosition(selection));
+  recordHistory(editor.innerText, getCaretPosition(selection));
 
   editor.innerHTML = `${afterCaret}${beforeCaret}`;
 

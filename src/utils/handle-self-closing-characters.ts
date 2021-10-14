@@ -52,7 +52,7 @@ const handleSelfClosingCharacters = (
   const beforeCaret = getBeforeCaret(selection);
 
   if (selection.type === 'Caret') {
-    const line = getLineOf(afterCaret.length, editor.innerHTML);
+    const line = getLineOf(afterCaret.length, editor.innerText);
 
     // Brackets
 
@@ -69,7 +69,7 @@ const handleSelfClosingCharacters = (
         end: nextCaretPosition,
       });
 
-      recordHistory(editor.innerHTML, {
+      recordHistory(editor.innerText, {
         start: nextCaretPosition,
         end: nextCaretPosition,
       });
@@ -151,7 +151,7 @@ const handleSelfClosingCharacters = (
               end: nextCaretPosition,
             });
 
-            recordHistory(editor.innerHTML, {
+            recordHistory(editor.innerText, {
               start: nextCaretPosition,
               end: nextCaretPosition,
             });
@@ -185,7 +185,7 @@ const handleSelfClosingCharacters = (
 
       // I also know, not the best name 😶
       const isCharactersInWholeTextEven =
-        editor.innerHTML
+        editor.innerText
           .split('')
           .reduce((acc, cur) => (cur === MUTLI_LINE_QUOTE ? acc + 1 : acc), 0) %
           2 ===
@@ -204,7 +204,7 @@ const handleSelfClosingCharacters = (
             end: nextCaretPosition,
           });
 
-          recordHistory(editor.innerHTML, {
+          recordHistory(editor.innerText, {
             start: nextCaretPosition,
             end: nextCaretPosition,
           });
@@ -226,9 +226,9 @@ const handleSelfClosingCharacters = (
   }
 
   if (selection.type === 'Range') {
-    const selectedText = editor.innerHTML.slice(
+    const selectedText = editor.innerText.slice(
       afterCaret.length,
-      editor.innerHTML.length - beforeCaret.length
+      editor.innerText.length - beforeCaret.length
     );
     let closingCharacter: string;
 
@@ -253,18 +253,15 @@ const handleSelfClosingCharacters = (
       //? Re select the previously selected text
 
       //* Do that check because selectedText may end with <br> (because to solve caret not moving bug we used this dirty trick 😗)
-      const selectedTextLength = selectedText.endsWith('<br>')
-        ? selectedText.slice(0, -4).length + 1
-        : selectedText.length + 1;
 
       const nextCaretPosition = {
         start: afterCaret.length + 1,
-        end: afterCaret.length + selectedTextLength,
+        end: afterCaret.length + selectedText.length + 1,
       };
 
       restoreCaretPosition(selection, editor.childNodes[0], nextCaretPosition);
 
-      recordHistory(editor.innerHTML, nextCaretPosition);
+      recordHistory(editor.innerText, nextCaretPosition);
     }
   }
 };
