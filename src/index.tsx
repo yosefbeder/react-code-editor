@@ -31,6 +31,7 @@ const CodeEditor = () => {
     );
   };
 
+  // onChange function
   useEffect(() => {
     calculateLineNumber(curText);
   }, [curText]);
@@ -163,6 +164,40 @@ const CodeEditor = () => {
 
     if (textAfter !== textBefore) {
       setCurText(textBefore);
+    }
+
+    /*
+      ? Fixing going to the last line with caret bug
+        1. If the down arrow is pressed and we're after the empty last empty line.
+        2. If the right arrow is pressed and we're in the last character after the last empty line.
+    */
+
+    if (textBefore.endsWith('\n')) {
+      const caretPosition = getCaretPosition(selection);
+
+      if (
+        e.code === 'ArrowDown' &&
+        caretPosition.start === caretPosition.end &&
+        caretPosition.start <= textBefore.lastIndexOf('\n') &&
+        caretPosition.start > textBefore.slice(0, -1).lastIndexOf('\n')
+      ) {
+        e.preventDefault();
+        restoreCaretPosition(selection, editor.childNodes[0], {
+          start: textBefore.length,
+          end: textBefore.length,
+        });
+      }
+
+      if (
+        e.code === 'ArrowRight' &&
+        caretPosition.start === textBefore.lastIndexOf('\n')
+      ) {
+        e.preventDefault();
+        restoreCaretPosition(selection, editor.childNodes[0], {
+          start: textBefore.length,
+          end: textBefore.length,
+        });
+      }
     }
   };
 
