@@ -16,10 +16,14 @@ import { PositionType } from './types';
 import handleCharacter from './utils/handle-character';
 import handleRangeRemoving from './utils/handle-range-removing';
 import './index.css';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
 
 const CodeEditor = () => {
   const [state, send] = useReducer(reducer, initialState);
-  const ref = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const previewerRef = useRef<HTMLDivElement>(null);
+
   const [lineNumber, setLineNumber] = useState(0);
   const [curText, setCurText] = useState('');
 
@@ -34,11 +38,17 @@ const CodeEditor = () => {
   // onChange function
   useEffect(() => {
     calculateLineNumber(curText);
+
+    // highlighting logic
+
+    const previewer = previewerRef.current!;
+
+    previewer.innerHTML = Prism.highlight(curText, Prism.languages.js, 'js');
   }, [curText]);
 
   // override the input whenever it's changed by the reducer
   useEffect(() => {
-    const editor = ref.current!;
+    const editor = editorRef.current!;
     const selection = window.getSelection()!;
 
     if (state.present.text !== editor.innerText) {
@@ -67,7 +77,7 @@ const CodeEditor = () => {
   };
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const editor = ref.current!;
+    const editor = editorRef.current!;
     const textAfter = editor.innerText;
     const selection = window.getSelection()!;
     const caretPosition = getCaretPosition(selection);
@@ -203,23 +213,26 @@ const CodeEditor = () => {
 
   return (
     <div className="editor">
-      <div
-        className="editor__textarea"
-        ref={ref}
-        contentEditable={true}
-        spellCheck={false}
-        onInput={() => {
-          //? Whenever a new line is removed by the default behavior of the browser
-          const editor = ref.current!;
-
-          setCurText(editor.innerText);
-        }}
-        onKeyDown={keyDownHandler}
-      />
       <div className="editor__lines-numbers">
         {Array.from({ length: lineNumber }).map((_, i) => (
           <div key={i}>{i + 1}</div>
         ))}
+      </div>
+      <div className="editor__main">
+        <div
+          className="editor__textarea"
+          ref={editorRef}
+          contentEditable={true}
+          spellCheck={false}
+          onInput={() => {
+            //? Whenever a new line is removed by the default behavior of the browser
+            const editor = editorRef.current!;
+
+            setCurText(editor.innerText);
+          }}
+          onKeyDown={keyDownHandler}
+        />
+        <div className="editor__previewer" ref={previewerRef} />
       </div>
     </div>
   );

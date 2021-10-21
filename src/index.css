@@ -5,8 +5,9 @@
   --color-gray: #555;
   --color-light-gray: #999;
 
-  position: relative;
+  display: flex;
   box-sizing: border-box;
+  width: 40rem;
 
   font-family: 'Azeret Mono', monospace;
   font-size: 0.8rem;
@@ -19,40 +20,40 @@
 }
 
 .editor__lines-numbers {
-  position: absolute;
-  top: 0;
-  left: 0;
+  flex: 0 0 max-content;
 
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  width: 1rem;
-  height: 100%;
-  padding: 1rem 0;
+  padding: 0.5rem;
   border-right: 1px solid var(--color-light-gray);
 
   color: var(--color-gray);
   font-weight: 300;
 }
 
-.editor__textarea {
-  width: 20rem;
-  height: max-content;
-  padding: 1rem;
-  padding-left: 2rem;
-  border: 1px solid var(--color-light-gray);
-  outline: none;
-  border-radius: 0.5rem;
+.editor__main {
+  position: relative;
 
-  color: var(--color-dark-gray);
+  flex: 1;
   font-weight: 500;
-  line-height: 1.5;
-
+  line-height: 1.75;
   white-space: pre;
   tab-size: 4;
-  overflow-x: scroll;
+  overflow-x: auto;
   scrollbar-width: none;
+}
+
+.editor__textarea,
+.editor__previewer {
+  padding: 0.5rem;
+  outline: none;
+}
+
+.editor__textarea {
+  color: transparent;
+  caret-color: var(--color-dark-gray);
 }
 
 .editor__textarea::after {
@@ -61,4 +62,12 @@
 
 .editor__textarea::-webkit-scrollbar {
   height: 0;
+}
+
+.editor__previewer {
+  position: absolute;
+  top: 0;
+  z-index: -10;
+  color: var(--color-dark-gray);
+  user-select: none;
 }
