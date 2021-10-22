@@ -1,5 +1,5 @@
 import { OPENING_BRACKETS, MUTLI_LINE_QUOTE } from '../constants';
-import { getAfterCaret } from './caret';
+import { getBeforeCaret } from './caret';
 
 const getLineOf = (offset: number, string: string): string => {
   /*
@@ -54,7 +54,7 @@ const getPaddingOf = (line: string): string => {
 };
 
 const getPadding = (selection: Selection) => {
-  const afterCaret = getAfterCaret(selection);
+  const beforeCaret = getBeforeCaret(selection);
   const textNode = selection.anchorNode?.nodeValue;
   const [start, end] = [selection.anchorOffset, selection.focusOffset];
   let padding: string;
@@ -71,8 +71,10 @@ const getPadding = (selection: Selection) => {
   //? Add an additional tab to opening if the character after the caret is an opening bracket except the last one or a mutli line quote
 
   if (
-    OPENING_BRACKETS.slice(0, 2).includes(afterCaret[afterCaret.length - 1]) ||
-    afterCaret[afterCaret.length - 1] === MUTLI_LINE_QUOTE
+    OPENING_BRACKETS.slice(0, 2).includes(
+      beforeCaret[beforeCaret.length - 1]
+    ) ||
+    beforeCaret[beforeCaret.length - 1] === MUTLI_LINE_QUOTE
   )
     padding = padding + '\t';
 

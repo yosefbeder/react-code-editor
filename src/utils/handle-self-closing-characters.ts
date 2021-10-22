@@ -48,21 +48,21 @@ const handleSelfClosingCharacters = (
 
   const selection = window.getSelection()!;
   const character = e.key;
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
 
   if (selection.type === 'Caret') {
-    const line = getLineOf(afterCaret.length, editor.innerText);
+    const line = getLineOf(beforeCaret.length, editor.innerText);
 
     // Brackets
 
     if (OPENING_BRACKETS.includes(character)) {
       e.preventDefault();
-      editor.innerHTML = `${afterCaret}${character}${
+      editor.innerHTML = `${beforeCaret}${character}${
         CLOSING_BRACKETS[OPENING_BRACKETS.indexOf(character)]
-      }${beforeCaret}`;
+      }${afterCaret}`;
 
-      const nextCaretPosition = afterCaret.length + 1;
+      const nextCaretPosition = beforeCaret.length + 1;
 
       restoreCaretPosition(selection, editor.childNodes[0], {
         start: nextCaretPosition,
@@ -76,10 +76,10 @@ const handleSelfClosingCharacters = (
     }
 
     if (CLOSING_BRACKETS.includes(character)) {
-      if (beforeCaret[0] === character) {
+      if (afterCaret[0] === character) {
         e.preventDefault();
 
-        const nextCaretPosition = afterCaret.length + 1;
+        const nextCaretPosition = beforeCaret.length + 1;
 
         restoreCaretPosition(selection, editor.childNodes[0], {
           start: nextCaretPosition,
@@ -101,7 +101,7 @@ const handleSelfClosingCharacters = (
           2 !==
           0
       ) {
-        editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
+        editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
       } else {
         // I know, not the best name 😑
         let isCharactersInLineEven: boolean;
@@ -138,13 +138,13 @@ const handleSelfClosingCharacters = (
             0;
         }
 
-        const nextCaretPosition = afterCaret.length + 1;
+        const nextCaretPosition = beforeCaret.length + 1;
 
         if (isCharactersInLineEven) {
-          if (beforeCaret[0] !== character) {
-            editor.innerHTML = `${afterCaret}${character.repeat(
+          if (afterCaret[0] !== character) {
+            editor.innerHTML = `${beforeCaret}${character.repeat(
               2
-            )}${beforeCaret}`;
+            )}${afterCaret}`;
 
             restoreCaretPosition(selection, editor.childNodes[0], {
               start: nextCaretPosition,
@@ -162,7 +162,7 @@ const handleSelfClosingCharacters = (
             });
           }
         } else {
-          editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
+          editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
 
           restoreCaretPosition(selection, editor.childNodes[0], {
             start: nextCaretPosition,
@@ -171,7 +171,7 @@ const handleSelfClosingCharacters = (
         }
       }
 
-      const nextCaretPosition = afterCaret.length + 1;
+      const nextCaretPosition = beforeCaret.length + 1;
 
       restoreCaretPosition(selection, editor.childNodes[0], {
         start: nextCaretPosition,
@@ -191,13 +191,13 @@ const handleSelfClosingCharacters = (
           2 ===
         0;
 
-      const nextCaretPosition = afterCaret.length + 1;
+      const nextCaretPosition = beforeCaret.length + 1;
 
       if (isCharactersInWholeTextEven) {
         if (beforeCaret[0] !== character) {
-          editor.innerHTML = `${afterCaret}${character.repeat(
+          editor.innerHTML = `${beforeCaret}${character.repeat(
             2
-          )}${beforeCaret}`;
+          )}${afterCaret}`;
 
           restoreCaretPosition(selection, editor.childNodes[0], {
             start: nextCaretPosition,
@@ -215,7 +215,7 @@ const handleSelfClosingCharacters = (
           });
         }
       } else {
-        editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
+        editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
 
         restoreCaretPosition(selection, editor.childNodes[0], {
           start: nextCaretPosition,
@@ -227,8 +227,8 @@ const handleSelfClosingCharacters = (
 
   if (selection.type === 'Range') {
     const selectedText = editor.innerText.slice(
-      afterCaret.length,
-      editor.innerText.length - beforeCaret.length
+      beforeCaret.length,
+      editor.innerText.length - afterCaret.length
     );
     let closingCharacter: string;
 
@@ -248,15 +248,15 @@ const handleSelfClosingCharacters = (
     if (isBracket || isQuote) {
       e.preventDefault();
       //? Wrap the selected text
-      editor.innerHTML = `${afterCaret}${character}${selectedText}${closingCharacter!}${beforeCaret}`;
+      editor.innerHTML = `${beforeCaret}${character}${selectedText}${closingCharacter!}${afterCaret}`;
 
       //? Re select the previously selected text
 
       //* Do that check because selectedText may end with <br> (because to solve caret not moving bug we used this dirty trick 😗)
 
       const nextCaretPosition = {
-        start: afterCaret.length + 1,
-        end: afterCaret.length + selectedText.length + 1,
+        start: beforeCaret.length + 1,
+        end: beforeCaret.length + selectedText.length + 1,
       };
 
       restoreCaretPosition(selection, editor.childNodes[0], nextCaretPosition);

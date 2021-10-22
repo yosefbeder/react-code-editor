@@ -8,12 +8,12 @@ const handleCharacter = (
   character: string,
   recordHistory: (html: string, position: PositionType) => void
 ) => {
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
 
-  editor.innerHTML = `${afterCaret}${character}${beforeCaret}`;
+  editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
 
-  const nextCaretPosition = afterCaret.length + 1;
+  const nextCaretPosition = beforeCaret.length + 1;
 
   restoreCaretPosition(selection, editor.childNodes[0], {
     start: nextCaretPosition,

@@ -13,29 +13,29 @@ const handleSpecialCharactersRemoving = (
 ) => {
   const selection = window.getSelection()!;
 
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
 
   //? The character after the caret is an opening bracket and the character before it is its closing one
   const isWrappedWithBrackets =
-    OPENING_BRACKETS.includes(afterCaret[afterCaret.length - 1]) &&
-    beforeCaret[0] ===
+    OPENING_BRACKETS.includes(beforeCaret[beforeCaret.length - 1]) &&
+    afterCaret[0] ===
       CLOSING_BRACKETS[
-        OPENING_BRACKETS.indexOf(afterCaret[afterCaret.length - 1])
+        OPENING_BRACKETS.indexOf(beforeCaret[beforeCaret.length - 1])
       ];
 
   //? The character after that caret is a quote and the one before it is the same one.
   const isWrappedWithQuotes =
     [...SINGLE_LINE_QUOTES, MUTLI_LINE_QUOTE].includes(
-      afterCaret[afterCaret.length - 1]
-    ) && beforeCaret[0] === afterCaret[afterCaret.length - 1];
+      beforeCaret[beforeCaret.length - 1]
+    ) && afterCaret[0] === beforeCaret[beforeCaret.length - 1];
 
   if (isWrappedWithBrackets || isWrappedWithQuotes) {
     e.preventDefault();
 
-    editor.innerHTML = `${afterCaret.slice(0, -1)}${beforeCaret.slice(1)}`;
+    editor.innerHTML = `${beforeCaret.slice(0, -1)}${afterCaret.slice(1)}`;
 
-    const nextCaretPosition = afterCaret.length - 1;
+    const nextCaretPosition = beforeCaret.length - 1;
 
     restoreCaretPosition(selection, editor.childNodes[0], {
       start: nextCaretPosition,

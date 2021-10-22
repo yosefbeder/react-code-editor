@@ -28,7 +28,7 @@ const restoreCaretPosition = (
   }
 };
 
-const getAfterCaret = (selection: Selection) => {
+const getBeforeCaret = (selection: Selection) => {
   const textNode = selection.anchorNode?.nodeValue;
   const { start } = getCaretPosition(selection);
 
@@ -37,7 +37,7 @@ const getAfterCaret = (selection: Selection) => {
   return textNode.slice(0, start);
 };
 
-const getBeforeCaret = (selection: Selection) => {
+const getAfterCaret = (selection: Selection) => {
   const textNode = selection.anchorNode?.nodeValue;
   const { end } = getCaretPosition(selection);
 

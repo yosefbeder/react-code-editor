@@ -7,17 +7,17 @@ const handleTab = (
 ) => {
   const selection = window.getSelection()!;
 
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
 
   if (e.shiftKey) {
-    if (afterCaret[afterCaret.length - 1] === '\t') {
-      editor.innerHTML = `${afterCaret.slice(
+    if (beforeCaret[beforeCaret.length - 1] === '\t') {
+      editor.innerHTML = `${beforeCaret.slice(
         0,
-        afterCaret.length - 1
-      )}${beforeCaret}`;
+        beforeCaret.length - 1
+      )}${afterCaret}`;
 
-      const nextCursorPosition = afterCaret.length - 1;
+      const nextCursorPosition = beforeCaret.length - 1;
 
       restoreCaretPosition(selection, editor.childNodes[0], {
         start: nextCursorPosition,
@@ -25,9 +25,9 @@ const handleTab = (
       });
     }
   } else {
-    editor.innerHTML = `${afterCaret}\t${beforeCaret}`;
+    editor.innerHTML = `${beforeCaret}\t${afterCaret}`;
 
-    const nextCursorPosition = afterCaret.length + 1;
+    const nextCursorPosition = beforeCaret.length + 1;
 
     restoreCaretPosition(selection, editor.childNodes[0], {
       start: nextCursorPosition,

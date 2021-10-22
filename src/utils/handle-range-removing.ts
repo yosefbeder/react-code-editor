@@ -11,14 +11,14 @@ const handleRangeRemoving = (
   editor: HTMLDivElement,
   recordHistory: (html: string, position: PositionType) => void
 ) => {
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
 
   recordHistory(editor.innerText, getCaretPosition(selection));
 
-  editor.innerHTML = `${afterCaret}${beforeCaret}`;
+  editor.innerHTML = `${beforeCaret}${afterCaret}`;
 
-  const nextCaretPosition = afterCaret.length;
+  const nextCaretPosition = beforeCaret.length;
 
   restoreCaretPosition(selection, editor.childNodes[0], {
     start: nextCaretPosition,

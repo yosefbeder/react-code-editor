@@ -14,8 +14,8 @@ const handleNewLine = (
   const selection = window.getSelection()!;
 
   //? Get the content around the caret
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
 
   /*
     ? Injecting the updated content
@@ -34,23 +34,23 @@ const handleNewLine = (
   let newContent: string;
 
   if (padding) {
-    newContent = `${afterCaret}\n${padding}${
-      (afterCaret[afterCaret.length - 1] ===
-        OPENING_BRACKETS[CLOSING_BRACKETS.indexOf(beforeCaret[0])] &&
-        CLOSING_BRACKETS.slice(0, 2).includes(beforeCaret[0])) ||
-      (afterCaret[afterCaret.length - 1] === MUTLI_LINE_QUOTE &&
-        beforeCaret[0] === MUTLI_LINE_QUOTE)
-        ? `\n${padding.slice(0, -1)}${beforeCaret}`
-        : beforeCaret
+    newContent = `${beforeCaret}\n${padding}${
+      (beforeCaret[beforeCaret.length - 1] ===
+        OPENING_BRACKETS[CLOSING_BRACKETS.indexOf(afterCaret[0])] &&
+        CLOSING_BRACKETS.slice(0, 2).includes(afterCaret[0])) ||
+      (beforeCaret[beforeCaret.length - 1] === MUTLI_LINE_QUOTE &&
+        afterCaret[0] === MUTLI_LINE_QUOTE)
+        ? `\n${padding.slice(0, -1)}${afterCaret}`
+        : afterCaret
     }`;
   } else {
-    newContent = `${afterCaret}\n${beforeCaret}`;
+    newContent = `${beforeCaret}\n${afterCaret}`;
   }
 
   editor.innerHTML = newContent;
 
   //? Move the position of the caret to the next line + the number of tabs
-  const nextCaretPosition = afterCaret.length + 1 + padding.length;
+  const nextCaretPosition = beforeCaret.length + 1 + padding.length;
 
   restoreCaretPosition(selection, editor.childNodes[0], {
     start: nextCaretPosition,

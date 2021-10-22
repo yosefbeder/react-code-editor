@@ -22,17 +22,17 @@ const handlePaste = (
   e.preventDefault();
 
   const selection = window.getSelection()!;
-  const afterCaret = getAfterCaret(selection);
   const beforeCaret = getBeforeCaret(selection);
+  const afterCaret = getAfterCaret(selection);
   const copiedText = e.clipboardData.getData('text/plain');
 
   const caretPosition = getCaretPosition(selection);
 
   recordHistory(editor.innerText, caretPosition);
 
-  editor.innerHTML = `${afterCaret}${copiedText}${beforeCaret}`;
+  editor.innerHTML = `${beforeCaret}${copiedText}${afterCaret}`;
 
-  const newCaretPosition = afterCaret.length + copiedText.length;
+  const newCaretPosition = beforeCaret.length + copiedText.length;
 
   restoreCaretPosition(selection, editor.childNodes[0], {
     start: newCaretPosition,
