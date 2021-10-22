@@ -18,6 +18,7 @@ import handleRangeRemoving from './utils/handle-range-removing';
 import './index.css';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
+import handlePaste from './utils/handle-paste';
 
 const CodeEditor = () => {
   const [state, send] = useReducer(reducer, initialState);
@@ -40,7 +41,6 @@ const CodeEditor = () => {
     calculateLineNumber(curText);
 
     // highlighting logic
-
     const previewer = previewerRef.current!;
 
     previewer.innerHTML = Prism.highlight(curText, Prism.languages.js, 'js');
@@ -231,6 +231,13 @@ const CodeEditor = () => {
             setCurText(editor.innerText);
           }}
           onKeyDown={keyDownHandler}
+          onPaste={e => {
+            const editor = editorRef.current!;
+
+            handlePaste(e, editor, recordHistory);
+
+            setCurText(editor.innerText);
+          }}
         />
         <div className="editor__previewer" ref={previewerRef} />
       </div>
