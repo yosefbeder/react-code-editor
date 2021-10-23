@@ -93,90 +93,45 @@ const handleSelfClosingCharacters = (
     if (SINGLE_LINE_QUOTES.includes(character)) {
       e.preventDefault();
 
-      if (
-        character === "'" &&
-        afterCaret
+      // I know, not the best name 😑
+      const isCharactersInLineEven =
+        line
           .split('')
-          .reduce((acc, cur) => (cur === '"' ? acc + 1 : acc), 0) %
-          2 !==
-          0
-      ) {
-        editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
-      } else {
-        // I know, not the best name 😑
-        let isCharactersInLineEven: boolean;
+          .reduce((acc, cur) => (cur === character ? acc + 1 : acc), 0) %
+          2 ===
+        0;
 
-        if (character === "'") {
-          // * (1)
-          isCharactersInLineEven = (() => {
-            return (
-              line.split('').reduce((acc, cur, i, arr) => {
-                if (cur === character) {
-                  const isInDoubleQuote =
-                    arr
-                      .slice(0, i)
-                      .reduce((acc, cur) => (cur === '"' ? acc + 1 : acc), 0) %
-                      2 !==
-                    0;
+      const nextCaretPosition = beforeCaret.length + 1;
 
-                  if (isInDoubleQuote) return acc;
-                  return acc + 1;
-                }
-
-                return acc;
-              }, 0) %
-                2 ===
-              0
-            );
-          })();
-        } else {
-          isCharactersInLineEven =
-            line
-              .split('')
-              .reduce((acc, cur) => (cur === character ? acc + 1 : acc), 0) %
-              2 ===
-            0;
-        }
-
-        const nextCaretPosition = beforeCaret.length + 1;
-
-        if (isCharactersInLineEven) {
-          if (afterCaret[0] !== character) {
-            editor.innerHTML = `${beforeCaret}${character.repeat(
-              2
-            )}${afterCaret}`;
-
-            restoreCaretPosition(selection, editor.childNodes[0], {
-              start: nextCaretPosition,
-              end: nextCaretPosition,
-            });
-
-            recordHistory(editor.innerText, {
-              start: nextCaretPosition,
-              end: nextCaretPosition,
-            });
-          } else {
-            restoreCaretPosition(selection, editor.childNodes[0], {
-              start: nextCaretPosition,
-              end: nextCaretPosition,
-            });
-          }
-        } else {
-          editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
+      if (isCharactersInLineEven) {
+        if (afterCaret[0] !== character) {
+          editor.innerHTML = `${beforeCaret}${character.repeat(
+            2
+          )}${afterCaret}`;
 
           restoreCaretPosition(selection, editor.childNodes[0], {
             start: nextCaretPosition,
             end: nextCaretPosition,
           });
+
+          recordHistory(editor.innerText, {
+            start: nextCaretPosition,
+            end: nextCaretPosition,
+          });
+        } else {
+          restoreCaretPosition(selection, editor.childNodes[0], {
+            start: nextCaretPosition,
+            end: nextCaretPosition,
+          });
         }
+      } else {
+        editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
+
+        restoreCaretPosition(selection, editor.childNodes[0], {
+          start: nextCaretPosition,
+          end: nextCaretPosition,
+        });
       }
-
-      const nextCaretPosition = beforeCaret.length + 1;
-
-      restoreCaretPosition(selection, editor.childNodes[0], {
-        start: nextCaretPosition,
-        end: nextCaretPosition,
-      });
     }
 
     // Mutli line quote
