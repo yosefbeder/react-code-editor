@@ -15,18 +15,42 @@ import { getCaretPosition, restoreCaretPosition } from './utils/caret';
 import { PositionType } from './types';
 import handleCharacter from './utils/handle-character';
 import handleRangeRemoving from './utils/handle-range-removing';
-import './index.css';
-import Prism from 'prismjs';
-import 'prismjs/themes/prism.css';
+import './index.scss';
 import handlePaste from './utils/handle-paste';
+import './hljs-configs';
+import hljs from 'highlight.js/lib/core';
 
-const CodeEditor = () => {
+interface CodeEditorProps {
+  theme?: 'light' | 'dark';
+  language?: string;
+  height?: number | 'auto';
+  spellCheck?: boolean;
+  handleHistory?: boolean;
+  handleSpecialCharacters?: boolean;
+  highlight?: boolean;
+  lineNumbers?: boolean;
+  onChange?: (content: string) => void;
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({
+  theme = 'light',
+  language = 'javscript',
+  height = 'auto',
+  spellCheck = false,
+  handleHistory = true,
+  handleSpecialCharacters = true,
+  highlight = true,
+  lineNumbers = true,
+  onChange,
+}) => {
   const [state, send] = useReducer(reducer, initialState);
   const editorRef = useRef<HTMLDivElement>(null);
   const previewerRef = useRef<HTMLDivElement>(null);
 
   const [lineNumber, setLineNumber] = useState(0);
   const [curText, setCurText] = useState('');
+
+  const isLanguageSupported = hljs.listLanguages().includes(language);
 
   const calculateLineNumber = (text: string) => {
     setLineNumber(
@@ -36,6 +60,15 @@ const CodeEditor = () => {
     );
   };
 
+  useEffect(() => {
+    if (!isLanguageSupported) {
+      //TODO add a ref to the doc when it's written
+      console.error(
+        '💥 The language that you added is not supported by default\nYou can add it by importing the language, then regestering it with the command `hljs.registerLanguage("javascript", javascript).'
+      );
+    }
+  }, []);
+
   // onChange function
   useEffect(() => {
     calculateLineNumber(curText);
@@ -43,7 +76,15 @@ const CodeEditor = () => {
     // highlighting logic
     const previewer = previewerRef.current!;
 
-    previewer.innerHTML = Prism.highlight(curText, Prism.languages.js, 'js');
+    if (highlight && isLanguageSupported) {
+      previewer.innerHTML = hljs.highlight(curText, {
+        language: language,
+      }).value;
+    } else {
+      previewer.innerHTML = curText;
+    }
+
+    onChange && onChange(curText);
   }, [curText]);
 
   // override the input whenever it's changed by the reducer
@@ -65,13 +106,13 @@ const CodeEditor = () => {
   }, [state.present]);
 
   /*
-    ? When is the history recorded
-      1. Whenever a space or dot is added.
-      2. When a new line is injected.
-      3. When double characters are added.
-      4. Undoing or redoing and the present isn't equal to the cur input value.
-      5. If some text is selected and we clicked a button that will delete it.
-  */
+		? When is the handleHistory recorded
+			1. Whenever a space or dot is added.
+			2. When a new line is injected.
+			3. When double characters are added.
+			4. Undoing or redoing and the present isn't equal to the cur input value.
+			5. If some text is selected and we clicked a button that will delete it.
+	*/
   const recordHistory = (text: string, position: PositionType) => {
     send({ type: Actions.RECORD, payload: { text, position } });
   };
@@ -117,21 +158,23 @@ const CodeEditor = () => {
       recordHistory(editor.innerText, getCaretPosition(selection));
     }
 
-    if (isUndo) {
-      // 4.
-      if (editor.innerText !== state.present.text) {
-        recordHistory(editor.innerText, getCaretPosition(selection));
+    if (handleHistory) {
+      if (isUndo) {
+        // 4.
+        if (editor.innerText !== state.present.text) {
+          recordHistory(editor.innerText, getCaretPosition(selection));
+        }
+        //* To fix updating issue
+        setTimeout(() => send({ type: Actions.UNDO }));
       }
-      //* To fix updating issue
-      setTimeout(() => send({ type: Actions.UNDO }));
-    }
 
-    if (isRedo) {
-      // 4.
-      if (editor.innerText !== state.present.text) {
-        recordHistory(editor.innerText, getCaretPosition(selection));
-      } else {
-        send({ type: Actions.REDO });
+      if (isRedo) {
+        // 4.
+        if (editor.innerText !== state.present.text) {
+          recordHistory(editor.innerText, getCaretPosition(selection));
+        } else {
+          send({ type: Actions.REDO });
+        }
       }
     }
 
@@ -146,14 +189,18 @@ const CodeEditor = () => {
 
     if (SPECIAL_CHARACTERS.includes(e.key)) {
       // 3.
-      handleSelfClosingCharacters(editor, e, recordHistory);
+      if (handleSpecialCharacters) {
+        handleSelfClosingCharacters(editor, e, recordHistory);
+      }
     }
 
     if (e.key === 'Backspace') {
-      handleSpecialCharactersRemoving(editor, e);
+      if (handleSpecialCharacters) {
+        handleSpecialCharactersRemoving(editor, e);
+      }
 
       //* Removing the default behavior of adding a <br> if the editor is empty
-      if (!editor.textContent) {
+      if (!editor.innerHTML) {
         e.preventDefault();
       }
     }
@@ -177,10 +224,10 @@ const CodeEditor = () => {
     }
 
     /*
-      ? Fixing going to the last line with caret bug
-        1. If the down arrow is pressed and we're after the empty last empty line.
-        2. If the right arrow is pressed and we're in the last character after the last empty line.
-    */
+			? Fixing going to the last line with caret bug
+				1. If the down arrow is pressed and we're after the empty last empty line.
+				2. If the right arrow is pressed and we're in the last character after the last empty line.
+		*/
 
     if (textBefore.endsWith('\n')) {
       const caretPosition = getCaretPosition(selection);
@@ -212,34 +259,48 @@ const CodeEditor = () => {
   };
 
   return (
-    <div className="editor">
-      <div className="editor__lines-numbers">
-        {Array.from({ length: lineNumber }).map((_, i) => (
-          <div key={i}>{i + 1}</div>
-        ))}
-      </div>
-      <div className="editor__main">
-        <div
-          className="editor__textarea"
-          ref={editorRef}
-          contentEditable={true}
-          spellCheck={false}
-          onInput={() => {
-            //? Whenever a new line is removed by the default behavior of the browser
-            const editor = editorRef.current!;
+    <div
+      style={{
+        height,
+        overflowY: height === 'auto' ? 'hidden' : 'scroll',
+        overflowX: 'scroll',
+      }}
+    >
+      <div
+        className={`editor editor--${theme} ${
+          height === 'auto' ? 'editor--dynamic' : ''
+        }`}
+      >
+        {lineNumbers && (
+          <div className="editor__lines-numbers">
+            {Array.from({ length: lineNumber }).map((_, i) => (
+              <span key={i}>{i + 1}</span>
+            ))}
+          </div>
+        )}
+        <div className="editor__main">
+          <div
+            className="editor__textarea"
+            ref={editorRef}
+            contentEditable={true}
+            spellCheck={spellCheck}
+            onInput={() => {
+              //? Whenever a new line is removed by the default behavior of the browser
+              const editor = editorRef.current!;
 
-            setCurText(editor.innerText);
-          }}
-          onKeyDown={keyDownHandler}
-          onPaste={e => {
-            const editor = editorRef.current!;
+              setCurText(editor.innerText);
+            }}
+            onKeyDown={keyDownHandler}
+            onPaste={e => {
+              const editor = editorRef.current!;
 
-            handlePaste(e, editor, recordHistory);
+              handlePaste(e, editor, recordHistory);
 
-            setCurText(editor.innerText);
-          }}
-        />
-        <div className="editor__previewer" ref={previewerRef} />
+              setCurText(editor.innerText);
+            }}
+          />
+          <div className="editor__previewer" ref={previewerRef} />
+        </div>
       </div>
     </div>
   );

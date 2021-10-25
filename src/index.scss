@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,400;0,500;1,500&display=swap');
+
+.editor {
+  &--light {
+    --color-fg: #383a42;
+    --color-fg-weak: #383a42aa;
+    --color-bg: #fafafa;
+  }
+
+  &--dark {
+    --color-fg: #abb2bf;
+    --color-fg-weak: #abb2bfaa;
+    --color-bg: #282c34;
+  }
+
+  display: flex;
+  min-width: 100%;
+  min-height: 100%;
+  width: max-content;
+  height: max-content;
+  box-sizing: border-box;
+  background-color: var(--color-bg);
+
+  font-family: 'Azeret Mono', monospace;
+  font-size: 0.8rem;
+
+  line-height: 1.25rem;
+
+  & *,
+  & *::after,
+  & *::before {
+    box-sizing: inherit;
+  }
+
+  &__lines-numbers {
+    flex: 0 0 max-content;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    border-right: 1px solid var(--color-fg);
+
+    color: var(--color-fg-weak);
+    font-weight: 400;
+  }
+
+  &--dynamic &__line-numbers {
+    justify-content: space-around;
+    line-height: 0;
+  }
+
+  &__main {
+    position: relative;
+
+    flex: 1;
+    scrollbar-width: none;
+
+    font-weight: 500;
+    white-space: pre;
+    tab-size: 4;
+    color: var(--color-fg);
+  }
+
+  &--dymanic &__main {
+    line-height: 1.75;
+  }
+
+  &__textarea,
+  &__previewer {
+    padding: 0.5rem;
+    outline: none;
+  }
+
+  &__textarea {
+    position: relative;
+
+    z-index: 10;
+
+    caret-color: var(--color-fg);
+
+    // To fix updating the caret position bug
+    color: #00000005;
+
+    &::after {
+      content: '\200b';
+    }
+
+    &::-webkit-scrollbar {
+      height: 0;
+    }
+  }
+
+  &__previewer {
+    position: absolute;
+    top: 0;
+  }
+
+  &--light &__previewer {
+    .comment,
+    .quote {
+      color: #a0a1a7;
+      font-style: italic;
+    }
+
+    .doctag,
+    .keyword,
+    .formula {
+      color: #a626a4;
+    }
+
+    .section,
+    .name,
+    .selector-tag,
+    .deletion,
+    .subst {
+      color: #e45649;
+    }
+
+    .literal {
+      color: #0184bb;
+    }
+
+    .string,
+    .regexp,
+    .addition,
+    .attribute,
+    .meta .string {
+      color: #50a14f;
+    }
+
+    .attr,
+    .variable,
+    .template-variable,
+    .type,
+    .selector-class,
+    .selector-attr,
+    .selector-pseudo,
+    .number {
+      color: #986801;
+    }
+
+    .symbol,
+    .bullet,
+    .link,
+    .meta,
+    .selector-id,
+    .title {
+      color: #4078f2;
+    }
+
+    .built_in,
+    .title.class_,
+    .class .title {
+      color: #c18401;
+    }
+  }
+
+  &--dark &__previewer {
+    .comment,
+    .quote {
+      color: #5c6370;
+      font-style: italic;
+    }
+
+    .doctag,
+    .keyword,
+    .formula {
+      color: #c678dd;
+    }
+
+    .section,
+    .name,
+    .selector-tag,
+    .deletion,
+    .subst {
+      color: #e06c75;
+    }
+
+    .literal {
+      color: #56b6c2;
+    }
+
+    .string,
+    .regexp,
+    .addition,
+    .attribute,
+    .meta .string {
+      color: #98c379;
+    }
+
+    .attr,
+    .variable,
+    .template-variable,
+    .type,
+    .selector-class,
+    .selector-attr,
+    .selector-pseudo,
+    .number {
+      color: #d19a66;
+    }
+
+    .symbol,
+    .bullet,
+    .link,
+    .meta,
+    .selector-id,
+    .title {
+      color: #61aeee;
+    }
+
+    .built_in,
+    .title.class_,
+    .class .title {
+      color: #e6c07b;
+    }
+  }
+}
