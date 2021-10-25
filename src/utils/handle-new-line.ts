@@ -1,5 +1,10 @@
-import { getPadding } from '.';
-import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
+import { getPadding, insert } from '.';
+import {
+  getAfterCaret,
+  getBeforeCaret,
+  getCaretPosition,
+  restoreCaretPosition,
+} from './caret';
 import {
   CLOSING_BRACKETS,
   OPENING_BRACKETS,
@@ -11,11 +16,11 @@ const handleNewLine = (
   editor: HTMLDivElement,
   recordHistory: (html: string, position: PositionType) => void
 ) => {
-  const selection = window.getSelection()!;
+  const caretPosition = getCaretPosition();
 
   //? Get the content around the caret
-  const beforeCaret = getBeforeCaret(selection);
-  const afterCaret = getAfterCaret(selection);
+  const beforeCaret = getBeforeCaret(caretPosition, editor.innerText);
+  const afterCaret = getAfterCaret(caretPosition, editor.innerText);
 
   /*
     ? Injecting the updated content
@@ -30,34 +35,43 @@ const handleNewLine = (
           2. If beforeCaret is not empty Inject normally.
   */
 
-  const padding = getPadding(selection);
-  let newContent: string;
+  const padding = getPadding(editor.innerText);
+
+  let text: string;
 
   if (padding) {
-    newContent = `${beforeCaret}\n${padding}${
-      (beforeCaret[beforeCaret.length - 1] ===
-        OPENING_BRACKETS[CLOSING_BRACKETS.indexOf(afterCaret[0])] &&
-        CLOSING_BRACKETS.slice(0, 2).includes(afterCaret[0])) ||
-      (beforeCaret[beforeCaret.length - 1] === MUTLI_LINE_QUOTE &&
-        afterCaret[0] === MUTLI_LINE_QUOTE)
-        ? `\n${padding.slice(0, -1)}${afterCaret}`
-        : afterCaret
+    //? The character after that caret is a quote and the one before it is the same one.
+    const isWrappedWithBrackets =
+      OPENING_BRACKETS.includes(beforeCaret[beforeCaret.length - 1]) &&
+      afterCaret[0] ===
+        CLOSING_BRACKETS[
+          OPENING_BRACKETS.indexOf(beforeCaret[beforeCaret.length - 1])
+        ];
+
+    const isWrappedWithMutliLineQuotes =
+      beforeCaret[beforeCaret.length - 1] === MUTLI_LINE_QUOTE &&
+      afterCaret[0] === MUTLI_LINE_QUOTE;
+
+    text = `\n${padding}${
+      isWrappedWithBrackets || isWrappedWithMutliLineQuotes
+        ? `\n${padding.slice(0, -1)}`
+        : ''
     }`;
   } else {
-    newContent = `${beforeCaret}\n${afterCaret}`;
+    text = `\n`;
   }
 
-  editor.innerHTML = newContent;
+  insert(text, editor);
 
   //? Move the position of the caret to the next line + the number of tabs
   const nextCaretPosition = beforeCaret.length + 1 + padding.length;
 
-  restoreCaretPosition(selection, editor.childNodes[0], {
+  restoreCaretPosition({
     start: nextCaretPosition,
     end: nextCaretPosition,
   });
 
-  recordHistory(newContent, {
+  recordHistory(editor.innerText, {
     start: nextCaretPosition,
     end: nextCaretPosition,
   });

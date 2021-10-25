@@ -78,7 +78,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
     if (highlight && isLanguageSupported) {
       previewer.innerHTML = hljs.highlight(curText, {
-        language: language,
+        language,
       }).value;
     } else {
       previewer.innerHTML = curText;
@@ -90,16 +90,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   // override the input whenever it's changed by the reducer
   useEffect(() => {
     const editor = editorRef.current!;
-    const selection = window.getSelection()!;
 
     if (state.present.text !== editor.innerText) {
-      editor.innerHTML = state.present.text;
-      restoreCaretPosition(
-        selection,
-        editor.childNodes[0],
-        state.present.position
-      );
+      const textNode = document.createTextNode(state.present.text);
 
+      editor.innerHTML = '';
+
+      editor.appendChild(textNode);
+
+      restoreCaretPosition(state.present.position);
       //? Whenever we undo or redo
       setCurText(editor.innerText);
     }
@@ -120,8 +119,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const editor = editorRef.current!;
     const textAfter = editor.innerText;
-    const selection = window.getSelection()!;
-    const caretPosition = getCaretPosition(selection);
+    const caretPosition = getCaretPosition();
     const isUndo = e.code === 'KeyZ' && e.ctrlKey;
     const isRedo = e.code === 'KeyY' && e.ctrlKey;
 
@@ -152,17 +150,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       if (e.key === 'Backspace') {
         e.preventDefault();
 
-        handleRangeRemoving(selection, editor, recordHistory);
+        handleRangeRemoving(editor, recordHistory);
       }
 
-      recordHistory(editor.innerText, getCaretPosition(selection));
+      recordHistory(editor.innerText, caretPosition);
     }
 
     if (handleHistory) {
       if (isUndo) {
         // 4.
         if (editor.innerText !== state.present.text) {
-          recordHistory(editor.innerText, getCaretPosition(selection));
+          recordHistory(editor.innerText, caretPosition);
         }
         //* To fix updating issue
         setTimeout(() => send({ type: Actions.UNDO }));
@@ -171,7 +169,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       if (isRedo) {
         // 4.
         if (editor.innerText !== state.present.text) {
-          recordHistory(editor.innerText, getCaretPosition(selection));
+          recordHistory(editor.innerText, caretPosition);
         } else {
           send({ type: Actions.REDO });
         }
@@ -207,12 +205,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
     if (e.code === 'Space') {
       // 1.
-      handleCharacter(selection, editor, ' ', recordHistory);
+      handleCharacter(editor, ' ', recordHistory);
     }
 
     if (e.key === '.') {
       // 1.
-      handleCharacter(selection, editor, '.', recordHistory);
+      handleCharacter(editor, '.', recordHistory);
     }
 
     //? Whenever something is changed by the handlers
@@ -230,7 +228,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 		*/
 
     if (textBefore.endsWith('\n')) {
-      const caretPosition = getCaretPosition(selection);
+      const caretPosition = getCaretPosition();
 
       if (
         e.code === 'ArrowDown' &&
@@ -239,7 +237,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         caretPosition.start > textBefore.slice(0, -1).lastIndexOf('\n')
       ) {
         e.preventDefault();
-        restoreCaretPosition(selection, editor.childNodes[0], {
+        restoreCaretPosition({
           start: textBefore.length,
           end: textBefore.length,
         });
@@ -250,7 +248,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         caretPosition.start === textBefore.lastIndexOf('\n')
       ) {
         e.preventDefault();
-        restoreCaretPosition(selection, editor.childNodes[0], {
+        restoreCaretPosition({
           start: textBefore.length,
           end: textBefore.length,
         });

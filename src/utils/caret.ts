@@ -1,49 +1,44 @@
 import { PositionType } from '../types';
 
-const getCaretPosition = (selection: Selection): PositionType => {
-  const [start, end] = [selection.anchorOffset, selection.focusOffset];
+const getCaretPosition = (): PositionType => {
+  const selection = window.getSelection();
 
-  if (start > end) {
-    return { start: end, end: start };
+  let start = 0;
+  let end = 0;
+
+  if (selection) {
+    [start, end] = [selection.anchorOffset, selection.focusOffset];
+
+    if (start > end) {
+      [start, end] = [end, start];
+    }
   }
 
   return { start, end };
 };
 
-const restoreCaretPosition = (
-  selection: Selection,
-  node: Node,
-  { start, end }: PositionType
-) => {
-  if (start === end) {
-    selection.collapse(node, start);
-  } else {
-    const range = document.createRange();
+const restoreCaretPosition = ({ start, end }: PositionType) => {
+  const selection = window.getSelection();
 
-    range.setStart(node, start);
-    range.setEnd(node, end);
+  if (selection) {
+    let node: Node;
 
-    selection.removeAllRanges();
-    selection.addRange(range);
+    if (selection.anchorNode?.nodeType === Node.TEXT_NODE) {
+      node = selection.anchorNode;
+    } else {
+      node = selection.anchorNode!.childNodes[0];
+    }
+
+    selection.setBaseAndExtent(node, start, node, end);
   }
 };
 
-const getBeforeCaret = (selection: Selection) => {
-  const textNode = selection.anchorNode?.nodeValue;
-  const { start } = getCaretPosition(selection);
-
-  if (!textNode) return '';
-
-  return textNode.slice(0, start);
+const getBeforeCaret = ({ start }: PositionType, text: string) => {
+  return text.slice(0, start);
 };
 
-const getAfterCaret = (selection: Selection) => {
-  const textNode = selection.anchorNode?.nodeValue;
-  const { end } = getCaretPosition(selection);
-
-  if (!textNode) return '';
-
-  return textNode.slice(end);
+const getAfterCaret = ({ end }: PositionType, text: string) => {
+  return text.slice(end);
 };
 
 export {

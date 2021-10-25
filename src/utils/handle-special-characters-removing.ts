@@ -1,5 +1,10 @@
 import React from 'react';
-import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
+import {
+  getAfterCaret,
+  getBeforeCaret,
+  getCaretPosition,
+  restoreCaretPosition,
+} from './caret';
 import {
   CLOSING_BRACKETS,
   MUTLI_LINE_QUOTE,
@@ -11,10 +16,10 @@ const handleSpecialCharactersRemoving = (
   editor: HTMLDivElement,
   e: React.KeyboardEvent<HTMLDivElement>
 ) => {
-  const selection = window.getSelection()!;
+  const caretPosition = getCaretPosition();
 
-  const beforeCaret = getBeforeCaret(selection);
-  const afterCaret = getAfterCaret(selection);
+  const beforeCaret = getBeforeCaret(caretPosition, editor.innerText);
+  const afterCaret = getAfterCaret(caretPosition, editor.innerText);
 
   //? The character after the caret is an opening bracket and the character before it is its closing one
   const isWrappedWithBrackets =
@@ -33,11 +38,17 @@ const handleSpecialCharactersRemoving = (
   if (isWrappedWithBrackets || isWrappedWithQuotes) {
     e.preventDefault();
 
-    editor.innerHTML = `${beforeCaret.slice(0, -1)}${afterCaret.slice(1)}`;
+    const textNode = document.createTextNode(
+      `${beforeCaret.slice(0, -1)}${afterCaret.slice(1)}`
+    );
+
+    editor.innerHTML = '';
+
+    editor.appendChild(textNode);
 
     const nextCaretPosition = beforeCaret.length - 1;
 
-    restoreCaretPosition(selection, editor.childNodes[0], {
+    restoreCaretPosition({
       start: nextCaretPosition,
       end: nextCaretPosition,
     });

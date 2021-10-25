@@ -1,21 +1,26 @@
+import { insert } from '.';
 import { PositionType } from '../types';
-import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
+import {
+  getBeforeCaret,
+  getCaretPosition,
+  restoreCaretPosition,
+} from './caret';
 
 // the purpose of this function is saving the history after inserting the character because onKeyDown body function is executed before the elements are inserted
 const handleCharacter = (
-  selection: Selection,
   editor: HTMLDivElement,
   character: string,
   recordHistory: (html: string, position: PositionType) => void
 ) => {
-  const beforeCaret = getBeforeCaret(selection);
-  const afterCaret = getAfterCaret(selection);
+  const caretPosition = getCaretPosition();
 
-  editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
+  const beforeCaret = getBeforeCaret(caretPosition, editor.innerHTML);
+
+  insert(character, editor);
 
   const nextCaretPosition = beforeCaret.length + 1;
 
-  restoreCaretPosition(selection, editor.childNodes[0], {
+  restoreCaretPosition({
     start: nextCaretPosition,
     end: nextCaretPosition,
   });

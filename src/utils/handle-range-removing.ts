@@ -1,26 +1,26 @@
+import { insert } from '.';
 import { PositionType } from '../types';
 import {
-  getAfterCaret,
   getBeforeCaret,
   getCaretPosition,
   restoreCaretPosition,
 } from './caret';
 
 const handleRangeRemoving = (
-  selection: Selection,
   editor: HTMLDivElement,
   recordHistory: (html: string, position: PositionType) => void
 ) => {
-  const beforeCaret = getBeforeCaret(selection);
-  const afterCaret = getAfterCaret(selection);
+  const caretPosition = getCaretPosition();
 
-  recordHistory(editor.innerText, getCaretPosition(selection));
+  const beforeCaret = getBeforeCaret(caretPosition, editor.innerText);
 
-  editor.innerHTML = `${beforeCaret}${afterCaret}`;
+  recordHistory(editor.innerText, caretPosition);
+
+  insert('', editor);
 
   const nextCaretPosition = beforeCaret.length;
 
-  restoreCaretPosition(selection, editor.childNodes[0], {
+  restoreCaretPosition({
     start: nextCaretPosition,
     end: nextCaretPosition,
   });

@@ -1,7 +1,7 @@
 import React from 'react';
+import { insert } from '.';
 import { PositionType } from '../types';
 import {
-  getAfterCaret,
   getBeforeCaret,
   getCaretPosition,
   restoreCaretPosition,
@@ -13,28 +13,25 @@ const handlePaste = (
   recordHistory: (text: string, position: PositionType) => void
 ) => {
   /*
-    ? Handling copies
-      1. Record the history.
-      2. Insert the new text as plain text.
-      3. Record the history.
-  */
+		? Handling copies
+			1. Record the history.
+			2. Insert the new text as plain text.
+			3. Record the history.
+	*/
 
   e.preventDefault();
 
-  const selection = window.getSelection()!;
-  const beforeCaret = getBeforeCaret(selection);
-  const afterCaret = getAfterCaret(selection);
+  const caretPosition = getCaretPosition();
+  const beforeCaret = getBeforeCaret(caretPosition, editor.innerText);
   const copiedText = e.clipboardData.getData('text/plain');
-
-  const caretPosition = getCaretPosition(selection);
 
   recordHistory(editor.innerText, caretPosition);
 
-  editor.innerHTML = `${beforeCaret}${copiedText}${afterCaret}`;
+  insert(copiedText, editor);
 
   const newCaretPosition = beforeCaret.length + copiedText.length;
 
-  restoreCaretPosition(selection, editor.childNodes[0], {
+  restoreCaretPosition({
     start: newCaretPosition,
     end: newCaretPosition,
   });

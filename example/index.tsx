@@ -6,7 +6,7 @@ import Thing from '../dist/react-code-editor.esm.js';
 const App = () => {
   return (
     <div>
-      <Thing language="python" theme="dark" />
+      <Thing language="typescript" theme="dark" />
     </div>
   );
 };

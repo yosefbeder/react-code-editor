@@ -1,5 +1,10 @@
-import { getLineOf } from '.';
-import { getAfterCaret, getBeforeCaret, restoreCaretPosition } from './caret';
+import { getLineOf, insert } from '.';
+import {
+  getAfterCaret,
+  getBeforeCaret,
+  getCaretPosition,
+  restoreCaretPosition,
+} from './caret';
 import {
   OPENING_BRACKETS,
   CLOSING_BRACKETS,
@@ -47,24 +52,27 @@ const handleSelfClosingCharacters = (
   */
 
   const selection = window.getSelection()!;
+  const caretPosition = getCaretPosition();
+
   const character = e.key;
-  const beforeCaret = getBeforeCaret(selection);
-  const afterCaret = getAfterCaret(selection);
+  const beforeCaret = getBeforeCaret(caretPosition, editor.innerText);
+  const afterCaret = getAfterCaret(caretPosition, editor.innerText);
 
   if (selection.type === 'Caret') {
-    const line = getLineOf(beforeCaret.length, editor.innerText);
+    const line = getLineOf(caretPosition, editor.innerText);
 
     // Brackets
-
     if (OPENING_BRACKETS.includes(character)) {
       e.preventDefault();
-      editor.innerHTML = `${beforeCaret}${character}${
-        CLOSING_BRACKETS[OPENING_BRACKETS.indexOf(character)]
-      }${afterCaret}`;
+
+      insert(
+        `${character}${CLOSING_BRACKETS[OPENING_BRACKETS.indexOf(character)]}`,
+        editor
+      );
 
       const nextCaretPosition = beforeCaret.length + 1;
 
-      restoreCaretPosition(selection, editor.childNodes[0], {
+      restoreCaretPosition({
         start: nextCaretPosition,
         end: nextCaretPosition,
       });
@@ -81,7 +89,7 @@ const handleSelfClosingCharacters = (
 
         const nextCaretPosition = beforeCaret.length + 1;
 
-        restoreCaretPosition(selection, editor.childNodes[0], {
+        restoreCaretPosition({
           start: nextCaretPosition,
           end: nextCaretPosition,
         });
@@ -89,7 +97,6 @@ const handleSelfClosingCharacters = (
     }
 
     // Single line quotes
-
     if (SINGLE_LINE_QUOTES.includes(character)) {
       e.preventDefault();
 
@@ -105,11 +112,9 @@ const handleSelfClosingCharacters = (
 
       if (isCharactersInLineEven) {
         if (afterCaret[0] !== character) {
-          editor.innerHTML = `${beforeCaret}${character.repeat(
-            2
-          )}${afterCaret}`;
+          insert(character.repeat(2), editor);
 
-          restoreCaretPosition(selection, editor.childNodes[0], {
+          restoreCaretPosition({
             start: nextCaretPosition,
             end: nextCaretPosition,
           });
@@ -119,15 +124,15 @@ const handleSelfClosingCharacters = (
             end: nextCaretPosition,
           });
         } else {
-          restoreCaretPosition(selection, editor.childNodes[0], {
+          restoreCaretPosition({
             start: nextCaretPosition,
             end: nextCaretPosition,
           });
         }
       } else {
-        editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
+        insert(character, editor);
 
-        restoreCaretPosition(selection, editor.childNodes[0], {
+        restoreCaretPosition({
           start: nextCaretPosition,
           end: nextCaretPosition,
         });
@@ -150,11 +155,9 @@ const handleSelfClosingCharacters = (
 
       if (isCharactersInWholeTextEven) {
         if (beforeCaret[0] !== character) {
-          editor.innerHTML = `${beforeCaret}${character.repeat(
-            2
-          )}${afterCaret}`;
+          insert(character.repeat(2), editor);
 
-          restoreCaretPosition(selection, editor.childNodes[0], {
+          restoreCaretPosition({
             start: nextCaretPosition,
             end: nextCaretPosition,
           });
@@ -164,15 +167,17 @@ const handleSelfClosingCharacters = (
             end: nextCaretPosition,
           });
         } else {
-          restoreCaretPosition(selection, editor.childNodes[0], {
+          restoreCaretPosition({
             start: nextCaretPosition,
             end: nextCaretPosition,
           });
         }
       } else {
+        insert(character, editor);
+
         editor.innerHTML = `${beforeCaret}${character}${afterCaret}`;
 
-        restoreCaretPosition(selection, editor.childNodes[0], {
+        restoreCaretPosition({
           start: nextCaretPosition,
           end: nextCaretPosition,
         });
@@ -203,18 +208,16 @@ const handleSelfClosingCharacters = (
     if (isBracket || isQuote) {
       e.preventDefault();
       //? Wrap the selected text
-      editor.innerHTML = `${beforeCaret}${character}${selectedText}${closingCharacter!}${afterCaret}`;
+      insert(`${character}${selectedText}${closingCharacter!}`, editor);
 
       //? Re select the previously selected text
-
-      //* Do that check because selectedText may end with <br> (because to solve caret not moving bug we used this dirty trick 😗)
 
       const nextCaretPosition = {
         start: beforeCaret.length + 1,
         end: beforeCaret.length + selectedText.length + 1,
       };
 
-      restoreCaretPosition(selection, editor.childNodes[0], nextCaretPosition);
+      restoreCaretPosition(nextCaretPosition);
 
       recordHistory(editor.innerText, nextCaretPosition);
     }
