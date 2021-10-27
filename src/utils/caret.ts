@@ -17,19 +17,23 @@ const getCaretPosition = (): PositionType => {
   return { start, end };
 };
 
-const restoreCaretPosition = ({ start, end }: PositionType) => {
+const restoreCaretPosition = ({ start, end }: PositionType, node?: Node) => {
   const selection = window.getSelection();
 
   if (selection) {
-    let node: Node;
+    if (node) {
+      selection.setBaseAndExtent(node, start, node, end);
+    } else if (selection.anchorNode) {
+      let anchorNode: Node;
 
-    if (selection.anchorNode?.nodeType === Node.TEXT_NODE) {
-      node = selection.anchorNode;
-    } else {
-      node = selection.anchorNode!.childNodes[0];
+      if (selection.anchorNode.nodeType === Node.TEXT_NODE) {
+        anchorNode = selection.anchorNode;
+      } else {
+        anchorNode = selection.anchorNode.childNodes[0];
+      }
+
+      selection.setBaseAndExtent(anchorNode, start, anchorNode, end);
     }
-
-    selection.setBaseAndExtent(node, start, node, end);
   }
 };
 

@@ -21,6 +21,9 @@ import './hljs-configs';
 import hljs from 'highlight.js/lib/core';
 
 interface CodeEditorProps {
+  value: string;
+  onChange: (content: string) => void;
+
   theme?: 'light' | 'dark';
   language?: string;
   height?: number | 'auto';
@@ -29,10 +32,11 @@ interface CodeEditorProps {
   handleSpecialCharacters?: boolean;
   highlight?: boolean;
   lineNumbers?: boolean;
-  onChange?: (content: string) => void;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
+  value,
+  onChange,
   theme = 'light',
   language = 'javscript',
   height = 'auto',
@@ -41,7 +45,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   handleSpecialCharacters = true,
   highlight = true,
   lineNumbers = true,
-  onChange,
 }) => {
   const [state, send] = useReducer(reducer, initialState);
   const editorRef = useRef<HTMLDivElement>(null);
@@ -84,7 +87,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       previewer.innerHTML = curText;
     }
 
-    onChange && onChange(curText);
+    onChange(curText);
   }, [curText]);
 
   // override the input whenever it's changed by the reducer
@@ -98,11 +101,18 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
       editor.appendChild(textNode);
 
-      restoreCaretPosition(state.present.position);
+      restoreCaretPosition(state.present.position, textNode);
       //? Whenever we undo or redo
       setCurText(editor.innerText);
     }
   }, [state.present]);
+
+  // override the editor if value !== curText
+  useEffect(() => {
+    if (value !== curText) {
+      recordHistory(value, { start: value.length, end: value.length });
+    }
+  }, [value]);
 
   /*
 		? When is the handleHistory recorded
@@ -145,7 +155,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       e.key !== 'Meta' &&
       e.key !== 'Control' &&
       e.key !== 'Alt' &&
-      !e.key.startsWith('Arrow')
+      !e.code.startsWith('Arrow')
     ) {
       if (e.key === 'Backspace') {
         e.preventDefault();
@@ -153,7 +163,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         handleRangeRemoving(editor, recordHistory);
       }
 
-      recordHistory(editor.innerText, caretPosition);
+      recordHistory(editor.innerText, getCaretPosition());
     }
 
     if (handleHistory) {
