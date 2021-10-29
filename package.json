@@ -1,11 +1,21 @@
 {
+	"name": "react-throwcode",
 	"version": "0.1.0",
+	"author": "yosefbeder",
 	"license": "MIT",
 	"main": "dist/index.js",
+	"module": "dist/react-throwcode.esm.js",
 	"typings": "dist/index.d.ts",
-	"files": [
-		"dist",
-		"src"
+	"homepage": "https://yosefbeder.github.io/react-throwcode",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yosefbeder/react-throwcode"
+	},
+	"keywords": [
+		"react",
+		"code-editor",
+		"editor",
+		"highlighting"
 	],
 	"engines": {
 		"node": ">=10"
@@ -31,9 +41,6 @@
 			"pre-commit": "tsdx lint"
 		}
 	},
-	"name": "react-throwcode",
-	"author": "yosefbeder",
-	"module": "dist/react-throwcode.esm.js",
 	"size-limit": [
 		{
 			"path": "dist/react-throwcode.cjs.production.min.js",
