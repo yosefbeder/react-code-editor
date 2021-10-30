@@ -1,0 +1,30 @@
+{
+	"name": "example",
+	"version": "0.0.0",
+	"scripts": {
+		"build:documentation": "node ./scripts/build-documentation.js",
+		"predev": "npm run build:documentation",
+		"dev": "vite",
+		"prebuild": "npm run build:documentation",
+		"build": "vite build",
+		"serve": "vite preview",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d dist"
+	},
+	"devDependencies": {
+		"@mdx-js/mdx": "^1.6.22",
+		"@mdx-js/react": "^1.6.22",
+		"@vitejs/plugin-react": "^1.0.0",
+		"autoprefixer": "^10.4.0",
+		"gh-pages": "^3.2.3",
+		"postcss": "^8.3.11",
+		"rollup-plugin-mdx": "^0.1.0",
+		"tailwindcss": "^2.2.19",
+		"vite": "^2.6.4",
+		"vite-plugin-mdx": "^3.5.9"
+	},
+	"dependencies": {
+		"@heroicons/react": "^1.0.5",
+		"@uiw/react-github-corners": "^1.5.3"
+	}
+}

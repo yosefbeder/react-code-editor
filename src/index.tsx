@@ -87,8 +87,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 				prefix: '',
 			});
 
-			console.log(tree);
-
 			previewer.innerHTML = toHtml(tree);
 		} else {
 			previewer.innerText = curText;
