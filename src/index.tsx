@@ -135,15 +135,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 		const editor = editorRef.current!;
 		const textAfter = editor.innerText;
 		const caretPosition = getCaretPosition();
-		const isUndo = e.code === 'KeyZ' && e.ctrlKey;
-		const isRedo = e.code === 'KeyY' && e.ctrlKey;
+		const isUndo = e.nativeEvent.code === 'KeyZ' && e.ctrlKey;
+		const isRedo = e.nativeEvent.code === 'KeyY' && e.ctrlKey;
 
 		if (
 			isUndo ||
 			isRedo ||
 			e.key === 'Enter' ||
 			e.key === 'Tab' ||
-			e.code === 'Space' ||
+			e.nativeEvent.code === 'Space' ||
 			e.key === '.'
 		) {
 			e.preventDefault();
@@ -160,7 +160,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			e.key !== 'Meta' &&
 			e.key !== 'Control' &&
 			e.key !== 'Alt' &&
-			!e.code.startsWith('Arrow')
+			!e.nativeEvent.code.startsWith('Arrow')
 		) {
 			if (e.key === 'Backspace') {
 				e.preventDefault();
@@ -218,7 +218,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			}
 		}
 
-		if (e.code === 'Space') {
+		if (e.nativeEvent.code === 'Space') {
 			// 1.
 			handleCharacter(editor, ' ', recordHistory);
 		}
@@ -246,7 +246,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			const caretPosition = getCaretPosition();
 
 			if (
-				e.code === 'ArrowDown' &&
+				e.nativeEvent.code === 'ArrowDown' &&
 				caretPosition.start === caretPosition.end &&
 				caretPosition.start <= textBefore.lastIndexOf('\n') &&
 				caretPosition.start > textBefore.slice(0, -1).lastIndexOf('\n')
@@ -259,7 +259,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			}
 
 			if (
-				e.code === 'ArrowRight' &&
+				e.nativeEvent.code === 'ArrowRight' &&
 				caretPosition.start === textBefore.lastIndexOf('\n')
 			) {
 				e.preventDefault();
