@@ -56,9 +56,7 @@
 		flex: 1;
 
 		font-weight: 500;
-		white-space: pre;
 		tab-size: 4;
-		color: var(--color-fg);
 	}
 
 	&--dymanic &__main {
@@ -97,6 +95,7 @@
 	&__previewer {
 		position: absolute;
 		top: 0;
+		color: var(--color-fg);
 		background-color: var(--color-bg);
 	}
 

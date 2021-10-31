@@ -301,6 +301,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 				<div className="editor__main">
 					<div
 						className="editor__textarea"
+						style={{ whiteSpace: 'pre' }}
 						ref={editorRef}
 						contentEditable={true}
 						spellCheck={spellCheck}
@@ -319,7 +320,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 							setCurText(editor.innerText);
 						}}
 					/>
-					<div className="editor__previewer" ref={previewerRef} />
+					<div
+						className="editor__previewer"
+						ref={previewerRef}
+						style={{ whiteSpace: 'pre' }}
+					/>
 				</div>
 			</div>
 		</div>
