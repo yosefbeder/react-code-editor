@@ -160,15 +160,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			e.key !== 'Meta' &&
 			e.key !== 'Control' &&
 			e.key !== 'Alt' &&
+			e.key !== 'Tab' &&
+			e.nativeEvent.code !== 'Space' &&
+			e.key !== 'Enter' &&
 			!e.nativeEvent.code.startsWith('Arrow')
 		) {
+			e.preventDefault();
+
 			if (e.key === 'Backspace') {
-				e.preventDefault();
-
 				handleRangeRemoving(editor, recordHistory);
+				recordHistory(editor.innerText, getCaretPosition());
+			} else {
+				recordHistory(editor.innerText, caretPosition);
+				handleCharacter(editor, e.key, recordHistory);
 			}
-
-			recordHistory(editor.innerText, getCaretPosition());
 		}
 
 		if (handleHistory) {
