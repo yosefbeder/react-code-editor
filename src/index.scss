@@ -14,10 +14,8 @@
 	}
 
 	display: flex;
-	min-width: 100%;
-	min-height: 100%;
-	width: max-content;
-	height: max-content;
+	width: 100%;
+	height: 100%;
 	box-sizing: border-box;
 
 	font-family: 'Azeret Mono', monospace;
@@ -40,6 +38,8 @@
 		padding: 0.5rem;
 		background-color: var(--color-bg);
 		border-right: 1px solid var(--color-fg);
+		min-height: 100%;
+		height: max-content;
 
 		color: var(--color-fg-weak);
 		font-weight: 400;
@@ -53,10 +53,7 @@
 	&__main {
 		position: relative;
 
-		flex: 0 0 max-content;
-		background-color: var(--color-bg);
-
-		scrollbar-width: none;
+		flex: 1;
 
 		font-weight: 500;
 		white-space: pre;
@@ -72,6 +69,10 @@
 	&__previewer {
 		padding: 0.5rem;
 		outline: none;
+		min-width: 100%;
+		min-height: 100%;
+		width: max-content;
+		height: max-content;
 	}
 
 	&__textarea {
@@ -96,6 +97,7 @@
 	&__previewer {
 		position: absolute;
 		top: 0;
+		background-color: var(--color-bg);
 	}
 
 	&--light &__previewer {
