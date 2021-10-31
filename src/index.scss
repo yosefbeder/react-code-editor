@@ -71,6 +71,14 @@
 		min-height: 100%;
 		width: max-content;
 		height: max-content;
+
+		&::after {
+			content: '\200b';
+		}
+
+		&::-webkit-scrollbar {
+			height: 0;
+		}
 	}
 
 	&__textarea {
@@ -82,14 +90,6 @@
 
 		// To fix updating the caret position bug
 		color: #00000005;
-
-		&::after {
-			content: '\200b';
-		}
-
-		&::-webkit-scrollbar {
-			height: 0;
-		}
 	}
 
 	&__previewer {
