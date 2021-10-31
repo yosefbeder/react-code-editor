@@ -64,17 +64,17 @@ var ye=Object.defineProperty,xe=Object.defineProperties;var Ce=Object.getOwnProp
   width: max-content;
   height: max-content;
 }
+.editor__textarea::after, .editor__previewer::after {
+  content: "\u200B";
+}
+.editor__textarea::-webkit-scrollbar, .editor__previewer::-webkit-scrollbar {
+  height: 0;
+}
 .editor__textarea {
   position: relative;
   z-index: 10;
   caret-color: var(--color-fg);
   color: #00000005;
-}
-.editor__textarea::after {
-  content: "\u200B";
-}
-.editor__textarea::-webkit-scrollbar {
-  height: 0;
 }
 .editor__previewer {
   position: absolute;
