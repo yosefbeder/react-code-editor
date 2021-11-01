@@ -140,13 +140,16 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 		const caretPosition = getCaretPosition();
 		const isUndo = e.nativeEvent.code === 'KeyZ' && e.ctrlKey;
 		const isRedo = e.nativeEvent.code === 'KeyY' && e.ctrlKey;
-		// I know 😑, It means `Ctrl` + `a`
-		const isSelectingAll = e.nativeEvent.code === 'KeyA' && e.ctrlKey;
+
+		const isSelectAll = e.nativeEvent.code === 'KeyA' && e.ctrlKey;
+		const isCopy = e.nativeEvent.code === 'KeyC' && e.ctrlKey;
+		const isCut = e.nativeEvent.code === 'KeyX' && e.ctrlKey;
+		const isPaste = e.nativeEvent.code === 'KeyV' && e.ctrlKey;
 
 		if (
 			isUndo ||
 			isRedo ||
-			isSelectingAll ||
+			isSelectAll ||
 			e.key === 'Enter' ||
 			e.key === 'Tab' ||
 			e.nativeEvent.code === 'Space' ||
@@ -163,7 +166,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			) &&
 			!isUndo &&
 			!isRedo &&
-			!isSelectingAll &&
+			!isSelectAll &&
+			!isCopy &&
+			!isPaste &&
+			!isCut &&
 			e.key !== 'Meta' &&
 			e.key !== 'Control' &&
 			e.key !== 'Alt' &&
@@ -203,7 +209,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 			}
 		}
 
-		if (isSelectingAll) {
+		if (isSelectAll) {
 			restoreCaretPosition({ start: 0, end: editor.innerText.length });
 		}
 
