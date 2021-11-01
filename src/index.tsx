@@ -49,6 +49,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 	className,
 }) => {
 	const [state, send] = useReducer(reducer, initialState);
+
+	const wrapperRef = useRef<HTMLDivElement>(null);
 	const editorRef = useRef<HTMLDivElement>(null);
 	const previewerRef = useRef<HTMLDivElement>(null);
 
@@ -133,6 +135,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
 	const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		const editor = editorRef.current!;
+		const warpper = wrapperRef.current!;
 		const textAfter = editor.innerText;
 		const caretPosition = getCaretPosition();
 		const isUndo = e.nativeEvent.code === 'KeyZ' && e.ctrlKey;
@@ -206,7 +209,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
 		if (e.key === 'Enter') {
 			// 2.
-			handleNewLine(editor, recordHistory);
+			handleNewLine(editor, warpper, height === 'auto', recordHistory);
 		}
 
 		if (e.key === 'Tab') {
@@ -293,6 +296,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 				overflowX: 'scroll',
 			}}
 			className={className}
+			ref={wrapperRef}
 		>
 			<div
 				className={`editor editor--${theme} ${
