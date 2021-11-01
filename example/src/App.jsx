@@ -69,6 +69,16 @@ function H3({ children }) {
 	);
 }
 
+function A({ children, href, ...elProps }) {
+	const inPage = href.startsWith('#');
+
+	return (
+		<a {...elProps} href={href} target={inPage ? '_self' : '_blank'}>
+			{children}
+		</a>
+	);
+}
+
 function ToggleSwitch({ isChecked, onToggle, children }) {
 	return (
 		<div className="flex items-center justify-between sm:justify-start sm:gap-2 ">
@@ -115,7 +125,7 @@ function App() {
 export default App;`);
 
 	const [configs, setConfigs] = useState({
-		language: 'typescript',
+		language: 'javascript',
 		theme: 'light',
 		value,
 		onChange: text => setValue(text),
@@ -128,7 +138,7 @@ export default App;`);
 	});
 
 	useEffect(() => {
-		document.querySelectorAll('pre code').forEach(codeblock => {
+		document.querySelectorAll('pre > code').forEach(codeblock => {
 			const language = codeblock.className.split('-')[1];
 			const content = codeblock.innerText;
 
@@ -262,7 +272,7 @@ export default App;`);
 						</a>
 					</div>
 				</section>
-				<MDXProvider components={{ h2: H2, h3: H3 }}>
+				<MDXProvider components={{ h2: H2, h3: H3, a: A }}>
 					<Documentation />
 				</MDXProvider>
 			</div>
