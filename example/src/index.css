@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400;500;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +18,7 @@
 
 	p,
 	li {
-		@apply font-medium text-base text-gray-700;
+		@apply text-base text-gray-700;
 	}
 
 	ul {
@@ -40,14 +41,6 @@
 	p > code,
 	li > code {
 		@apply font-mono  bg-blue-200 text-gray-800 px-0.5 rounded-sm;
-	}
-
-	section {
-		@apply mb-6 space-y-4;
-	}
-
-	section > * {
-		@apply m-0;
 	}
 }
 

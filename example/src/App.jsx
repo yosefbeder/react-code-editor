@@ -170,8 +170,11 @@ export default App;`);
 
 				<section>
 					<H2>Example</H2>
-					<Editor {...configs} className="editor rounded-md shadow-md border" />
-					<div className="grid sm:grid-cols-2 p-2 rounded-md shadow-md border bg-white">
+					<Editor
+						{...configs}
+						className="editor rounded-md shadow-md border mb-4"
+					/>
+					<div className="grid sm:grid-cols-2 p-2 rounded-md shadow-md border bg-white mb-4">
 						<ToggleSwitch
 							isChecked={configs.height !== 'auto'}
 							onToggle={() =>
