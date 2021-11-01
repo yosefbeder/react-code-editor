@@ -193,42 +193,42 @@ import javascript from 'highlight.js/lib/languages/typescript';
 lowlight.registerLanguage(javascript, 'javascript');
 
 function App() {
-    const [code, setCode] = useState('');
+  const [code, setCode] = useState('');
 
-    return (
-        <div className="app">
-            <CodeEditor
-                language="javascript"
-                value={code}
-                onChange={text => setCode(text)}
-            />
-        </div>
-    );
+  return (
+    <div className="app">
+      <CodeEditor
+        language="javascript"
+        value={code}
+        onChange={text => setCode(text)}
+      />
+    </div>
+  );
 }
 
 export default App;
 `)),t("h2",null,"Props"),t("p",null,"The data type of the options"),t("pre",null,t("code",{parentName:"pre",className:"language-ts"},`interface CodeEditorProps {
-    language: string;
-    value: string;
-    onChange: (content: string) => void;
+  language: string;
+  value: string;
+  onChange: (content: string) => void;
 
-    theme?: 'light' | 'dark';
-    height?: number | 'auto' | string;
-    spellCheck?: boolean;
-    handleHistory?: boolean;
-    handleSpecialCharacters?: boolean;
-    highlight?: boolean;
-    lineNumbers?: boolean;
-    className?: string;
+  theme?: 'light' | 'dark';
+  height?: number | 'auto' | string;
+  spellCheck?: boolean;
+  handleHistory?: boolean;
+  handleSpecialCharacters?: boolean;
+  highlight?: boolean;
+  lineNumbers?: boolean;
+  className?: string;
 }
 `)),t("p",null,"The default props"),t("pre",null,t("code",{parentName:"pre",className:"language-js"},`const defaultProps = {
-    theme: 'light',
-    height: 'auto',
-    spellCheck: false,
-    handleHistory: true,
-    handleSpecialCharacters: true,
-    highlight: true,
-    lineNumbers: true,
+  theme: 'light',
+  height: 'auto',
+  spellCheck: false,
+  handleHistory: true,
+  handleSpecialCharacters: true,
+  highlight: true,
+  lineNumbers: true,
 };
 `)),t("ul",null,t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"value"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Represents the code that is displayed."),t("li",{parentName:"ul"},"If you want to update the code you just have to rewrite with ",t("inlineCode",{parentName:"li"},"setValue"),"."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"onChange"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Takes a callback that receives ",t("inlineCode",{parentName:"li"},"content")," arg which is a string."),t("li",{parentName:"ul"},"Is called whenever the content of the editor is changed whether it's changed by undoing/redoing or by the user typing."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"theme"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},t("a",{parentName:"li",href:"https://highlightjs.org/"},"highlight.js")," is used as a peer dependency for highlighting."),t("li",{parentName:"ul"},"I just included two themes in the library becuase I wanted it to be easier to use and the reason mentioned in ",t("a",{parentName:"li",href:"#caveats"},"caveats section"),"."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"language"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"I decided to use ",t("a",{parentName:"li",href:"https://www.npmjs.com/package/lowlight"},"lowlight"),", which is built on ",t("a",{parentName:"li",href:"https://highlightjs.org/"},"highlight.js"),"."),t("li",{parentName:"ul"},"The reason for that is giving you the ability to ",t("a",{parentName:"li",href:"#using-lowlight-in-other-parts-of-your-application"},"use lowlight in other parts of your application"),"."),t("li",{parentName:"ul"},"If you want to use any language follow these steps.")))),t("pre",null,t("code",{parentName:"pre",className:"language-js"},`// Note: You should import it from /lib/core
 import { lowlight } from 'lowlight/lib/core';
@@ -241,9 +241,9 @@ lowlight.registerLanguage('typescript', typescript);
 
 // Add the language with the name that you registered it with
 <CodeEditor
-    language="typescript"
-    value={code}
-    onChange={text => setCode(text)}
+  language="typescript"
+  value={code}
+  onChange={text => setCode(text)}
 />;
 `)),t("ul",null,t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"height"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"You can either make it implicit by passing ",t("inlineCode",{parentName:"li"},"auto")," or explicit by passing a number or a string (a number with a unit)."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"spellCheck"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Enables spell check."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"handleHistory"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Enables undoing and redoing."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"handleSpecialCharacters"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Closes quotes (`",t("inlineCode",{parentName:"li"},"\\"),",",t("inlineCode",{parentName:"li"},"'"),",",t("inlineCode",{parentName:"li"},'"'),") and brackets (",t("inlineCode",{parentName:"li"},"["),",",t("inlineCode",{parentName:"li"},"{"),",",t("inlineCode",{parentName:"li"},"("),") automatically."),t("li",{parentName:"ul"},"Wraps selected text with them."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"highlight"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Enables code highlighting."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"lineNumbers"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Enables line numbers."))),t("li",{parentName:"ul"},t("inlineCode",{parentName:"li"},"className"),t("ul",{parentName:"li"},t("li",{parentName:"ul"},"Applies styles to the wrapper of the editor.")))),t("h2",null,"Using lowlight in other parts of your application"),t("p",null,t("a",{parentName:"p",href:"https://www.npmjs.com/package/lowlight"},"lowlight")," is a peer depedency for this library, so you should be able to use it in your app."),t("p",null,"Unfortunatelly, when ",t("a",{parentName:"p",href:"https://www.npmjs.com/package/lowlight"},"lowlight")," is installed in a project you can't use ",t("inlineCode",{parentName:"p"},"hljs.highlightAll")," function to highlight the other code blocks in your app."),t("p",null,"I faced this problem while creating the ",t("a",{parentName:"p",href:"https://yosefbeder.github.io/react-throwcode/"},"home page")," of the library, so I had to come up with a solution."),t("pre",null,t("code",{parentName:"pre",className:"language-js"},`// Register the language
 import { lowlight } from 'lowlight/lib/core';
@@ -256,12 +256,12 @@ import 'highlight.js/styles/atom-one-light.css';
 
 // Highlight all code blocks
 document.querySelectorAll('pre > code').forEach(codeblock => {
-    const language = codeblock.className.split('-')[1];
-    const content = codeblock.innerText;
+  const language = codeblock.className.split('-')[1];
+  const content = codeblock.innerText;
 
-    // toHtml is imported from hast-util-to-html which is also a peer depedency
-    codeblock.innerHTML = toHtml(lowlight.highlight(language, content));
-    codeblock.classList.add('hljs');
+  // toHtml is imported from hast-util-to-html which is also a peer depedency
+  codeblock.innerHTML = toHtml(lowlight.highlight(language, content));
+  codeblock.classList.add('hljs');
 });
 `)),t("h2",null,"Caveats"),t("p",null,"Due to the way this lib is implemented (a layer for highlighting and a layer for editing above it), You can only change the colors of the keywords, so I had to take to themes and modify them so that they don't change the style of the font."),t("h2",null,"Contribution"),t("p",null,"If you want to contribute run these commands"),t("pre",null,t("code",{parentName:"pre",className:"language-bash"},`# Clone the repo
 git clone https://github.com/yosefbeder/react-throwcode.git
