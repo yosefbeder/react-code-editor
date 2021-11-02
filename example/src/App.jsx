@@ -163,8 +163,8 @@ export default App;`);
 						<span className="text-blue-500">ThrowCode</span>
 					</h1>
 					<p className="w-96">
-						A mini code-editor for small apps with the most essential features
-						for a code editor!
+						The perfect choice for throwing some code that other people can play
+						with! 👩‍💻
 					</p>
 				</section>
 
